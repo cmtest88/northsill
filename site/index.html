@@ -198,6 +198,43 @@
   }
   .issue .sum .v { overflow-wrap: anywhere; color: var(--slate); }
 
+  /* ---- changelog: a record, not a news feed ---- */
+  #log-list { display: grid; gap: 14px; }
+  .log-entry { border-top: 1px solid var(--rule); padding-top: 16px; }
+  .log-entry:first-child { border-top: 1px solid var(--rule-strong); }
+  .log-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  .log-head h3 { font-family: Archivo, sans-serif; font-size: 1.15rem; }
+  .log-entry summary {
+    cursor: pointer; display: flex; align-items: baseline; gap: 12px;
+    font-weight: 600; list-style: none;
+  }
+  .log-entry summary::-webkit-details-marker { display: none; }
+  .log-entry summary::before { content: "+"; color: var(--rule-strong); font-weight: 400; }
+  .log-entry[open] summary::before { content: "–"; }
+  .log-body { color: var(--slate); font-size: 0.95rem; }
+  .log-body h4 {
+    font-family: "IBM Plex Mono", monospace; font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate);
+    margin: 14px 0 6px;
+  }
+  .log-body ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 7px; }
+  /* A hanging indent, NOT flex. In a flex li every <strong> becomes its own flex item, so a
+     bullet that opens with a bold lead-in ("No more black console window behind the app.")
+     stacked into a narrow column with the rest of the sentence beside it. */
+  .log-body li { position: relative; padding-left: 22px; }
+  .log-body li::before {
+    content: "—"; color: var(--rule-strong);
+    position: absolute; left: 0; top: 0;
+  }
+  .log-body strong { color: var(--ink); font-weight: 600; }
+  .log-body p { margin: 8px 0; }
+  .log-body code { font-family: "IBM Plex Mono", monospace; font-size: 0.88em; }
+  .log-body pre {
+    background: var(--shade); border: 1px solid var(--rule); padding: 10px 12px;
+    overflow-x: auto; font-family: "IBM Plex Mono", monospace; font-size: 0.82rem;
+    margin: 10px 0;
+  }
+
   .note {
     border-left: 3px solid var(--accent); background: var(--shade);
     padding: 15px 17px; font-size: 0.95rem; color: var(--slate);
@@ -410,6 +447,18 @@
     </div>
   </section>
 
+  <section id="changelog" hidden>
+    <div class="copy" style="gap:20px">
+      <div class="ref">Changelog</div>
+      <h2>What changed, build by build.</h2>
+      <p style="color:var(--slate);max-width:62ch">
+        Written when the build was cut, read straight from the release — so this page and the
+        release itself cannot drift apart.
+      </p>
+      <div id="log-list"></div>
+    </div>
+  </section>
+
   <footer>
     <div>Northsill — a BIM application for architects. Built in the open.</div>
     <div><a href="https://facebook.com/NorthsillBIM">Facebook</a> · <a href="mailto:hello@northsill.app">hello@northsill.app</a></div>
@@ -455,6 +504,77 @@
       if (kv) out[kv[1].toLowerCase()] = kv[2];
     });
     return out;
+  }
+
+  // ---------------------------------------------------------------------------------------
+  // A MARKDOWN SUBSET, RENDERED SAFELY.
+  //
+  // The release notes are Markdown, and the page needs HTML. Two things decide the shape of
+  // this:
+  //
+  //  1. NO LIBRARY. A full Markdown parser is 40 KB to render six headings and some bullets
+  //     that WE author. The subset below is exactly what release-body.md produces.
+  //  2. ESCAPE FIRST, THEN FORMAT. The text arrives from an API. Even though it is our own
+  //     repository, dropping fetched text into innerHTML unescaped is how a compromised or
+  //     mistyped release body becomes script running on northsill.app. Every character is
+  //     escaped first; only the handful of patterns below are then turned back into tags.
+  // ---------------------------------------------------------------------------------------
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function md(src) {
+    if (!src) return "";
+    // The machine-readable block is for the page's own plumbing, not for a reader.
+    var text = String(src).replace(/<!--[^]*?-->/g, "");
+    var out = [], list = false, fence = false, code = [], para = [], item = null;
+
+    // ★ ESCAPE, THEN FORMAT, AND DO IT ON A WHOLE BLOCK. The first version applied this per
+    // LINE, so a bold run that wrapped across two source lines never matched its closing
+    // pair and the reader got literal asterisks — which is exactly what the Installing
+    // paragraph did. Release notes wrap; the renderer has to join before it formats.
+    function inline(s) {
+      return esc(s)
+        .replace(/`([^`]+)`/g, "<code>$1</code>")
+        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    }
+    function flushPara() { if (para.length) { out.push("<p>" + inline(para.join(" ")) + "</p>"); para = []; } }
+    function flushItem() { if (item !== null) { out.push("<li>" + inline(item) + "</li>"); item = null; } }
+    function flushList() { flushItem(); if (list) { out.push("</ul>"); list = false; } }
+
+    text.split(/\r?\n/).forEach(function (raw) {
+      if (/^```/.test(raw)) {                       // fenced code: verification commands
+        if (fence) { out.push("<pre>" + esc(code.join("\n")) + "</pre>"); code = []; }
+        else { flushPara(); flushList(); }
+        fence = !fence;
+        return;
+      }
+      if (fence) { code.push(raw); return; }
+
+      var h = raw.match(/^(#{2,4})\s+(.*)$/);
+      if (h) { flushPara(); flushList(); out.push("<h4>" + inline(h[2]) + "</h4>"); return; }
+
+      var li = raw.match(/^\s*[-*]\s+(.*)$/);
+      if (li) {
+        flushPara(); flushItem();
+        if (!list) { out.push("<ul>"); list = true; }
+        item = li[1];
+        return;
+      }
+
+      if (!raw.trim()) { flushPara(); flushList(); return; }
+
+      // A continuation line: of the bullet above if we are in one, else of the paragraph.
+      if (item !== null) { item += " " + raw.trim(); return; }
+      para.push(raw.trim());
+    });
+
+    flushPara();
+    flushList();
+    if (code.length) out.push("<pre>" + esc(code.join("\n")) + "</pre>");
+    return out.join("");
   }
 
   function mb(bytes) { return (bytes / (1024 * 1024)).toFixed(1) + " MB"; }
@@ -505,6 +625,27 @@
         }).join("");
         $("older").hidden = false;
       }
+      // ---- the changelog ----------------------------------------------------------------
+      // Every release already carries its notes. Rendering them here means the "what changed"
+      // on this page can never disagree with the "what changed" on the release — there is one
+      // text, written once.
+      if ($("log-list")) {
+        $("log-list").innerHTML = builds.slice(0, 8).map(function (b, i) {
+          var t = (b.rel.tag_name || "").replace(/^v/, "");
+          var inner = '<div class="log-head"><span class="ref">' + day(b.rel.published_at) +
+                      '</span><h3>' + esc(t) + '</h3></div>' +
+                      '<div class="log-body">' + md(b.rel.body) + "</div>";
+          // The current build is open; the rest are a click away, so the page stays a page
+          // rather than becoming an archive you have to scroll past to reach anything.
+          return i === 0
+            ? '<article class="log-entry">' + inner + "</article>"
+            : '<details class="log-entry"><summary><span class="ref">' +
+              day(b.rel.published_at) + "</span> " + esc(t) + "</summary>" +
+              '<div class="log-body">' + md(b.rel.body) + "</div></details>";
+        }).join("");
+        $("changelog").hidden = false;
+      }
+
     })
     .catch(function () { /* offline, rate-limited or blocked: the fallback link stands */ });
 })();
