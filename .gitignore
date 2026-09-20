@@ -1,0 +1,4 @@
+# Ignore the installer sitting here for convenience — release assets are
+# UPLOADED to a GitHub Release, never committed. A 21 MB binary in git history
+# is permanent and there is no reason for it to be there.
+*.exe

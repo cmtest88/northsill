@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- ★ WITHOUT THIS THE PAGE RENDERS AT DESKTOP WIDTH ON A PHONE and the reader is handed a
+     zoomed-out sheet of 8 px type. The site's own call to action points at Facebook, which is
+     overwhelmingly read on a phone, so this line is not a detail. -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northsill — native BIM for Windows</title>
+<meta name="description" content="Northsill is a BIM application for architects. Model the building once and derive the whole drawing set from it: plans, elevations, sections, schedules and sheets. Runs on your own machine.">
+<link rel="canonical" href="https://northsill.app/">
+<meta name="theme-color" content="#0b3f8f">
+
+<!-- The app's own icon, so the tab, the bookmark and the phone home screen all carry the
+     same mark as the .exe. Generated from app_qt/icons/app.ico — one source, no drift. -->
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="img/logo-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+
+<!-- Link preview. Pasting northsill.app into Facebook or Messenger previously showed a bare
+     URL with no title, image or blurb, which is the worst possible first impression on the
+     one channel the page itself links to. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Northsill">
+<meta property="og:title" content="Northsill — native BIM for Windows">
+<meta property="og:description" content="Model the building once. Plans, elevations, sections, schedules and sheets are derived from it. Runs on your own machine.">
+<meta property="og:url" content="https://northsill.app/">
+<meta property="og:image" content="https://northsill.app/img/social-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Northsill — native BIM for Windows">
+<meta name="twitter:description" content="Model the building once. Plans, elevations, sections, schedules and sheets are derived from it. Runs on your own machine.">
+<meta name="twitter:image" content="https://northsill.app/img/social-card.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    /* Drawing-sheet palette: graphite ink on cool drafting paper, with the app's own
+       selection accent as the single warm note. The neutrals are biased blue-grey, the way
+       a print is, rather than a default mid-grey. */
+    --paper: #f7f8f9;
+    --surface: #ffffff;
+    --ink: #16191d;
+    --slate: #5b6672;
+    --rule: #d9dee3;
+    --rule-strong: #b9c2ca;
+    --accent: #c96a12;
+    --accent-ink: #ffffff;
+    --shade: #eef1f3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #101316;
+      --surface: #171b20;
+      --ink: #e8ebed;
+      --slate: #9aa6b2;
+      --rule: #272d34;
+      --rule-strong: #39424b;
+      --accent: #e28121;
+      --accent-ink: #14171a;
+      --shade: #1b2026;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #101316;
+    --surface: #171b20;
+    --ink: #e8ebed;
+    --slate: #9aa6b2;
+    --rule: #272d34;
+    --rule-strong: #39424b;
+    --accent: #e28121;
+    --accent-ink: #14171a;
+    --shade: #1b2026;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .sheet { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 0; }
+
+  h1, h2, h3 { font-family: Archivo, "IBM Plex Sans", system-ui, sans-serif; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(2.4rem, 6.2vw, 4.1rem); line-height: 1.02; font-weight: 700; letter-spacing: -0.035em; }
+  h2 { font-size: clamp(1.5rem, 3.2vw, 2.05rem); line-height: 1.15; font-weight: 600; letter-spacing: -0.02em; }
+  h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.005em; }
+  p { margin: 0; }
+  a { color: inherit; }
+
+  /* The mono eyebrow is the drawing-office voice: sheet references, field names, versions. */
+  .ref {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--slate);
+  }
+
+  /* ---- masthead ---- */
+  .masthead {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+    padding-block: 22px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .wordmark {
+    font-family: Archivo, sans-serif; font-weight: 700;
+    font-size: 1.25rem; letter-spacing: -0.03em;
+    display: flex; align-items: center; gap: 10px;
+  }
+  /* The real app icon, not a stand-in square: the mark on the page is the mark on the
+     taskbar. Sized in rem so it tracks the wordmark rather than the viewport. */
+  .wordmark .mark { width: 1.45em; height: 1.45em; border-radius: 5px; align-self: center;
+                    border: 1px solid var(--rule); }
+
+  /* ---- hero ---- */
+  .hero { padding-block: clamp(46px, 8vw, 86px) 0; display: grid; gap: 30px;
+          grid-template-columns: minmax(0, 1fr); }
+  .hero .lede {
+    font-size: clamp(1.05rem, 2.1vw, 1.26rem);
+    color: var(--slate); max-width: 60ch; line-height: 1.55;
+  }
+  .hero .lede strong { color: var(--ink); font-weight: 600; }
+  .cta-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: var(--accent-ink);
+    font-weight: 600; font-size: 1rem;
+    padding: 14px 22px; border-radius: 2px; text-decoration: none;
+    border: 1px solid transparent;
+  }
+  .btn:hover { filter: brightness(1.07); }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule-strong); }
+  .btn:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .plate { border: 1px solid var(--rule); background: var(--surface); }
+  .plate video, .plate img { display: block; width: 100%; max-width: 100%; height: auto; }
+  figure { margin: 0; }
+  figcaption { padding: 11px 14px; border-top: 1px solid var(--rule); color: var(--slate); font-size: 0.85rem; }
+
+  /* ---- sections ---- */
+  section { padding-block: clamp(46px, 7vw, 78px); border-top: 1px solid var(--rule); }
+  .band { display: grid; gap: 34px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+  @media (min-width: 880px) { .band { grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr); gap: 54px; } }
+  .band .copy { display: grid; gap: 16px; align-content: start; min-width: 0; }
+  .band .copy p { color: var(--slate); }
+
+  ul.spec { list-style: none; padding: 0; margin: 0; display: grid; gap: 9px; }
+  ul.spec li { display: flex; gap: 11px; font-size: 0.97rem; color: var(--slate); }
+  ul.spec li::before { content: "—"; color: var(--rule-strong); flex: none; }
+
+  /* ---- honest ledger ---- */
+  .ledger { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 760px) { .ledger { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; } }
+  .ledger-col { display: grid; gap: 12px; align-content: start; }
+  .ledger-col h3 { display: flex; align-items: center; gap: 9px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .dot.on { background: #3f8f4f; }
+  .dot.off { background: var(--rule-strong); }
+  .ledger-col ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 7px; font-size: 0.95rem; color: var(--slate); }
+
+  /* ---- titleblock: the one device only this subject owns ---- */
+  .titleblock { border: 1px solid var(--rule-strong); display: grid; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 620px) { .titleblock { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 900px) { .titleblock { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .field { padding: 13px 15px; border-bottom: 1px solid var(--rule); }
+  @media (min-width: 900px) { .field { border-bottom: none; border-right: 1px solid var(--rule); } .field:last-child { border-right: none; } }
+  .field .k { display: block; margin-bottom: 3px; }
+  .field .v { font-family: "IBM Plex Mono", monospace; font-size: 0.93rem; font-variant-numeric: tabular-nums; }
+
+  /* Mono, but running-text sized — distinct from .ref, which is the uppercase eyebrow.
+     I used this class before it existed, so the checksum was setting in body sans. */
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.9em;
+          font-variant-numeric: tabular-nums; }
+
+  /* ---- the issue record: what you are about to download, stated like a drawing issue ----
+     The button alone is a web convention; the sheet of facts beside it is this subject's.
+     A checksum and an expiry date belong in a bordered block with ruled fields, not in three
+     stacked callouts — .note is the device for a WARNING, and spending it three times in a
+     row leaves nothing looking urgent. */
+  .issue { border: 1px solid var(--rule-strong); background: var(--surface); }
+  .issue-act {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px;
+    padding: 20px 20px 22px;
+  }
+  .issue-act .for { color: var(--slate); font-size: 0.93rem; }
+  .issue .titleblock { border: none; border-top: 1px solid var(--rule-strong); }
+  .issue .sum {
+    padding: 13px 15px; border-top: 1px solid var(--rule);
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline;
+  }
+  .issue .sum .v { overflow-wrap: anywhere; color: var(--slate); }
+
+  .note {
+    border-left: 3px solid var(--accent); background: var(--shade);
+    padding: 15px 17px; font-size: 0.95rem; color: var(--slate);
+  }
+  .note strong { color: var(--ink); font-weight: 600; }
+
+  footer { border-top: 1px solid var(--rule); padding-block: 28px 40px; color: var(--slate); font-size: 0.88rem; display: flex; gap: 18px; flex-wrap: wrap; justify-content: space-between; }
+  footer a { text-decoration-color: var(--rule-strong); text-underline-offset: 3px; }
+
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+  <header class="masthead">
+    <div class="wordmark"><img class="mark" src="img/logo-256.png" alt="" width="28" height="28">Northsill</div>
+    <div class="ref">Native BIM for Windows · Beta</div>
+  </header>
+
+  <div class="hero">
+    <div style="display:grid;gap:18px">
+      <div class="ref">Model once. Document from it.</div>
+      <h1>The model is the easy part. The drawing set is the job.</h1>
+      <p class="lede">
+        Northsill is a BIM application for architects. You model the building once — and the
+        drawing set is <strong>derived</strong> from it: plans, elevations, sections, schedules,
+        sheets. Change the model and every view follows, because there is nothing to keep in
+        step by hand.
+      </p>
+      <div class="cta-row">
+        <a class="btn" href="#download">Download for Windows</a>
+        <a class="btn ghost" href="https://facebook.com/NorthsillBIM">See it on Facebook</a>
+      </div>
+    </div>
+
+    <figure class="plate">
+      <video src="img/hero_loop.mp4" autoplay muted loop playsinline aria-label="A house model turning slowly in the Northsill 3D view"></video>
+      <figcaption>A model in Northsill — walls, openings, floors and a framed hip roof.</figcaption>
+    </figure>
+  </div>
+
+  <section>
+    <div class="band">
+      <div class="copy">
+        <div class="ref">Model</div>
+        <h2>Build it once, properly.</h2>
+        <p>
+          Walls that know their layers. Doors and windows that cut them properly. Floors, roofs,
+          stairs, railings, columns, beams and footings — modelled as what they are, not as
+          shapes that look right in one view.
+        </p>
+        <ul class="spec">
+          <li>Layered wall types with materials and priorities</li>
+          <li>Hip, gable and dutch roofs; L, T and U plans</li>
+          <li>Levels, grids, rooms and room tags</li>
+          <li>Double precision throughout, on an OpenCASCADE kernel</li>
+        </ul>
+      </div>
+      <figure class="plate">
+        <img src="img/model.jpg" alt="The Northsill 3D view showing a house with walls, window openings and floors" loading="lazy">
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="band">
+      <div class="copy">
+        <div class="ref">Document</div>
+        <h2>Every view comes out of the model.</h2>
+        <p>
+          The plan, the elevation and the section are computed from the one model — exactly, every
+          time. Annotate them the way you always have, put them on sheets with your titleblock,
+          and export the set.
+        </p>
+        <ul class="spec">
+          <li>Plans, exact hidden-line elevations and sections</li>
+          <li>Dimensions, tags, text and room names</li>
+          <li>View range, detail levels, pen standards and hatch patterns</li>
+          <li>Sheets with an editable titleblock → PDF, DXF, SVG, IFC</li>
+        </ul>
+      </div>
+      <figure class="plate">
+        <img src="img/app_plan.jpg" alt="Northsill with a floor plan and the 3D view side by side, a wall selected in both" loading="lazy">
+        <figcaption>A wall selected in the plan, highlighted in the 3D — one model, two views.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="band">
+      <div class="copy">
+        <div class="ref">Count</div>
+        <h2>The quantities are the same building.</h2>
+        <p>
+          Schedules and cut lists are counted from the model, so they are never a separate
+          exercise and never out of date. Change the design and the numbers change with it.
+        </p>
+        <ul class="spec">
+          <li>Live schedules with grouping, filters and formatting</li>
+          <li>Framing cut lists, takeoffs and U-values</li>
+          <li>Finishes schedules from the materials you painted</li>
+        </ul>
+      </div>
+      <figure class="plate">
+        <img src="img/app_sched.jpg" alt="A framing cut list schedule beside the 3D view, with one rafter selected and its cut data shown" loading="lazy">
+        <figcaption>A framing cut list, counted from the model — beside the rafter it is counting.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="band">
+      <div class="copy">
+        <div class="ref">Build</div>
+        <h2>It knows how the building is put together.</h2>
+        <p>
+          The model carries the frame, not a pattern drawn over it. A birdsmouth exists because
+          the roof bears on a plate and the plate is referenced to the rafter — so change the
+          pitch and every member re-cuts itself.
+        </p>
+        <ul class="spec">
+          <li>Wall framing: studs, plates, kings, jacks, headers, sills, cripples</li>
+          <li>Roof framing: commons, jacks, hips, valleys, ridges, trusses</li>
+          <li>Derived carpentry: plumb cuts, cheek cuts, hip backing, birdsmouths</li>
+          <li>Masonry coursing with real units and mortar joints</li>
+        </ul>
+      </div>
+      <figure class="plate">
+        <img src="img/structure.jpg" alt="A hidden-line x-ray of the same house showing every stud, plate and rafter" loading="lazy">
+        <figcaption>The same model, drawn as linework — every stud, plate and rafter.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="copy" style="gap:22px">
+      <div class="ref">Where it actually is</div>
+      <h2>An honest ledger.</h2>
+      <p style="color:var(--slate);max-width:62ch">
+        Northsill is in development and this page will not pretend otherwise. If you are going to
+        put a project through it, you should know what it does not do yet.
+      </p>
+      <div class="ledger" style="margin-top:6px">
+        <div class="ledger-col">
+          <h3><span class="dot on"></span>Working today</h3>
+          <ul>
+            <li>Modelling, derived views, annotation, schedules and sheets</li>
+            <li>Export to PDF, DXF, SVG and IFC</li>
+            <li>Wall, roof and floor framing with cut lists</li>
+            <li>Undo/redo, incremental regeneration, a versioned <code>.nsl</code> file</li>
+          </ul>
+        </div>
+        <div class="ledger-col">
+          <h3><span class="dot off"></span>Not yet</h3>
+          <ul>
+            <li>No IFC or DWG <em>import</em> — Northsill can be added to a workflow, but cannot yet join one</li>
+            <li>Very large models are slow to open cold (tens of thousands of elements)</li>
+            <li>Windows only; no macOS build</li>
+            <li>The installer is unsigned, so Windows will warn you</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="download">
+    <div class="copy" style="gap:20px">
+      <div class="ref">Download</div>
+      <h2>Take it for a drive.</h2>
+      <p style="color:var(--slate);max-width:62ch">
+        The beta is a full build — nothing is held back behind a paywall or a watermark on your
+        drawings. It runs entirely on your own machine: no account, no cloud, no project of yours
+        leaves the computer. Install it, open one of your own buildings, and tell me what breaks.
+      </p>
+      <div class="issue">
+        <div class="issue-act">
+          <a class="btn" id="dl" href="https://github.com/cmtest88/northsill/releases/download/v0.9.5/NorthsillBetaSetup-0.9.5.exe" download>Download for Windows</a>
+          <span class="for">Installs in under a minute. Opens <span class="mono">.nsl</span> files straight from Explorer.</span>
+        </div>
+        <div class="titleblock">
+          <div class="field"><span class="k ref">Version</span><span class="v">0.9.5 beta</span></div>
+          <div class="field"><span class="k ref">Platform</span><span class="v">Windows 10 / 11 · x64</span></div>
+          <div class="field"><span class="k ref">Size</span><span class="v">21.5 MB</span></div>
+          <div class="field"><span class="k ref">Expires</span><span class="v">2026-11-19</span></div>
+        </div>
+        <div class="sum">
+          <span class="k ref">SHA-256</span>
+          <span class="v mono">cf52e22be2851b8780d59c334879c7c33b6991508f944837621c3c4812a45add</span>
+        </div>
+      </div>
+
+      <p class="note">
+        <strong>Windows will warn you when you run it.</strong> The installer is not code-signed
+        yet — a certificate costs money that has gone into the software instead. You will see
+        “Windows protected your PC”; click <strong>More info → Run anyway</strong>. If that is not
+        a trade you are willing to make, that is a fair call — write to me and I will show you the
+        app on a call instead.
+      </p>
+      <p style="color:var(--slate);max-width:62ch;font-size:0.95rem">
+        Test builds stop running after 60 days. That is not a sales tactic — it is how I make sure
+        nobody is quietly reporting bugs against a build from four months ago. Come back here for
+        the current one; your <span class="mono">.nsl</span> files keep working.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div>Northsill — a BIM application for architects. Built in the open.</div>
+    <div><a href="https://facebook.com/NorthsillBIM">Facebook</a> · <a href="mailto:hello@northsill.app">hello@northsill.app</a></div>
+  </footer>
+</div>
+</body>
+</html>

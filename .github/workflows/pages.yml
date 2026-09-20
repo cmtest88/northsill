@@ -1,0 +1,43 @@
+# Publish site/ to GitHub Pages.
+#
+# WHERE THIS RUNS MATTERS. northsill-app is PRIVATE and holds the source of a paid product;
+# GitHub Pages on a private repo needs a paid plan, and public release assets need a public
+# repo. So the intended home for both the page and the installer is a SEPARATE PUBLIC repo
+# (e.g. cmtest88/northsill) that carries nothing but this site and the release .exe files.
+# Drop this workflow in that repo with site/ beside it and it deploys on every push.
+#
+# The custom domain comes from site/CNAME (northsill.app), which is committed, so Pages picks
+# it up on the first deploy. The DNS records still have to be set at the registrar once —
+# today northsill.app points at a Namecheap parking IP and serves nothing.
+name: Deploy site
+
+on:
+  push:
+    branches: [master]
+    paths: ['site/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a queued run supersedes a waiting one rather than racing it.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4
