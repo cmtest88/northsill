@@ -172,6 +172,11 @@
 
   /* Mono, but running-text sized — distinct from .ref, which is the uppercase eyebrow.
      I used this class before it existed, so the checksum was setting in body sans. */
+  /* ★ [hidden] LOSES TO ANY display RULE. .sum sets display:flex, so el.hidden = true did
+     nothing and the row kept showing the PREVIOUS build's checksum — the exact failure the
+     script is written to prevent. The UA sheet's [hidden] is not specific enough; this is. */
+  [hidden] { display: none !important; }
+
   .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.9em;
           font-variant-numeric: tabular-nums; }
 
@@ -374,14 +379,14 @@
           <span class="for">Installs in under a minute. Opens <span class="mono">.nsl</span> files straight from Explorer.</span>
         </div>
         <div class="titleblock">
-          <div class="field"><span class="k ref">Version</span><span class="v">0.9.5 beta</span></div>
+          <div class="field"><span class="k ref">Version</span><span class="v" id="f-ver">0.9.5 beta</span></div>
           <div class="field"><span class="k ref">Platform</span><span class="v">Windows 10 / 11 · x64</span></div>
-          <div class="field"><span class="k ref">Size</span><span class="v">21.5 MB</span></div>
-          <div class="field"><span class="k ref">Expires</span><span class="v">2026-11-19</span></div>
+          <div class="field"><span class="k ref">Size</span><span class="v" id="f-size">21.5 MB</span></div>
+          <div class="field"><span class="k ref">Expires</span><span class="v" id="f-exp">2026-11-19</span></div>
         </div>
-        <div class="sum">
+        <div class="sum" id="f-sumrow">
           <span class="k ref">SHA-256</span>
-          <span class="v mono">cf52e22be2851b8780d59c334879c7c33b6991508f944837621c3c4812a45add</span>
+          <span class="v mono" id="f-sum">cf52e22be2851b8780d59c334879c7c33b6991508f944837621c3c4812a45add</span>
         </div>
       </div>
 
@@ -392,6 +397,11 @@
         a trade you are willing to make, that is a fair call — write to me and I will show you the
         app on a call instead.
       </p>
+      <div id="older" hidden>
+        <div class="ref" style="margin-bottom:10px">Previous builds</div>
+        <div class="titleblock" id="older-list"></div>
+      </div>
+
       <p style="color:var(--slate);max-width:62ch;font-size:0.95rem">
         Test builds stop running after 60 days. That is not a sales tactic — it is how I make sure
         nobody is quietly reporting bugs against a build from four months ago. Come back here for
@@ -405,5 +415,99 @@
     <div><a href="https://facebook.com/NorthsillBIM">Facebook</a> · <a href="mailto:hello@northsill.app">hello@northsill.app</a></div>
   </footer>
 </div>
+
+<script>
+// ---------------------------------------------------------------------------------------
+// THE DOWNLOAD FACTS COME FROM THE RELEASE, NOT FROM THIS FILE.
+//
+// Hand-written version numbers on a download page go stale the first time you ship and are
+// wrong SILENTLY — the button keeps handing people the previous build and nothing looks
+// broken. So the page asks GitHub what the current release actually is.
+//
+// THREE RULES, each learned from a way this normally breaks:
+//  1. PROGRESSIVE ENHANCEMENT. The href in the HTML is a real, working link. This script only
+//     ever UPGRADES it. If GitHub is down, rate-limited (60/hr per IP, unauthenticated) or
+//     blocked, the page still hands over a working installer.
+//  2. NEVER SHOW A FACT WE NO LONGER KNOW. The API gives name, size and date but NOT a
+//     checksum or an expiry date. Those come from a machine-readable block that the release
+//     notes carry. If it is absent, the row is HIDDEN rather than left showing the last
+//     build's numbers — a wrong checksum is worse than no checksum.
+//  3. IT IS A LIST, NOT A LATEST. Older builds render underneath, so somebody on 0.9.4 can
+//     see what they have and what is current.
+// ---------------------------------------------------------------------------------------
+(function () {
+  var REPO = "cmtest88/northsill";
+  var $ = function (id) { return document.getElementById(id); };
+
+  // The release body may carry an HTML comment we can parse. It is invisible on GitHub's own
+  // release page, so the notes stay readable to people while staying machine-readable here.
+  //   <!-- northsill-meta
+  //   expires: 2026-11-19
+  //   sha256: cf52...
+  //   -->
+  function meta(body) {
+    var out = {};
+    if (!body) return out;
+    var m = body.match(/<!--[^]*?northsill-meta([^]*?)-->/i);
+    if (!m) return out;
+    m[1].split(/[\r\n]+/).forEach(function (line) {
+      var kv = line.match(/^\s*([a-z0-9_-]+)\s*:\s*(.+?)\s*$/i);
+      if (kv) out[kv[1].toLowerCase()] = kv[2];
+    });
+    return out;
+  }
+
+  function mb(bytes) { return (bytes / (1024 * 1024)).toFixed(1) + " MB"; }
+  function day(iso) { return (iso || "").slice(0, 10); }
+  function isInstaller(a) { return /\.exe$/i.test(a.name || ""); }
+
+  fetch("https://api.github.com/repos/" + REPO + "/releases")
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function (rels) {
+      var builds = [];
+      (rels || []).forEach(function (rel) {
+        if (rel.draft) return;
+        var asset = (rel.assets || []).filter(isInstaller)[0];
+        if (!asset) return;                       // a release with no installer is not a build
+        builds.push({ rel: rel, asset: asset, m: meta(rel.body) });
+      });
+      if (!builds.length) return;                 // leave the hand-written fallback alone
+
+      var cur = builds[0];
+      var tag = (cur.rel.tag_name || "").replace(/^v/, "");
+      var dl = $("dl");
+      if (dl) { dl.href = cur.asset.browser_download_url; }
+      if (tag && $("f-ver")) $("f-ver").textContent = tag + " beta";
+      if ($("f-size")) $("f-size").textContent = mb(cur.asset.size);
+
+      // Expiry and checksum are only as good as the metadata block. No block, no row.
+      var exp = cur.m.expires || "";
+      if ($("f-exp")) {
+        // An em dash, not a hidden cell: removing one field of four leaves a gap that reads
+        // as a broken table, and "not stated" is the honest thing to say anyway.
+        $("f-exp").textContent = exp || "—";
+      }
+      var sha = (cur.m.sha256 || "").toLowerCase();
+      if ($("f-sum") && $("f-sumrow")) {
+        if (/^[0-9a-f]{64}$/.test(sha)) { $("f-sum").textContent = sha; }
+        else { $("f-sumrow").hidden = true; }
+      }
+
+      // ---- previous builds -------------------------------------------------------------
+      var older = builds.slice(1, 7);
+      if (older.length && $("older") && $("older-list")) {
+        $("older-list").innerHTML = older.map(function (b) {
+          var t = (b.rel.tag_name || "").replace(/^v/, "");
+          return '<div class="field">' +
+                 '<span class="k ref">' + day(b.rel.published_at) + "</span>" +
+                 '<span class="v"><a href="' + b.asset.browser_download_url + '">' +
+                 t + "</a> · " + mb(b.asset.size) + "</span></div>";
+        }).join("");
+        $("older").hidden = false;
+      }
+    })
+    .catch(function () { /* offline, rate-limited or blocked: the fallback link stands */ });
+})();
+</script>
 </body>
 </html>
