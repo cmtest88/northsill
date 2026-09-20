@@ -115,6 +115,51 @@
   .wordmark .mark { width: 1.45em; height: 1.45em; border-radius: 5px; align-self: center;
                     border: 1px solid var(--rule); }
 
+  /* ---- masthead: sticky, because Download should never be more than a glance away ---- */
+  .masthead {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  .wordmark { text-decoration: none; }
+  .nav { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .nav a {
+    font-size: 0.92rem; color: var(--slate); text-decoration: none;
+    padding-block: 4px; border-bottom: 1px solid transparent;
+  }
+  .nav a:hover { color: var(--ink); border-bottom-color: var(--rule-strong); }
+  .nav .nav-cta {
+    color: var(--accent-ink); background: var(--accent);
+    padding: 7px 14px; border-bottom: none; font-weight: 600;
+  }
+  .nav .nav-cta:hover { filter: brightness(1.07); border-bottom-color: transparent; }
+  @media (max-width: 620px) { .nav { gap: 14px; } .nav a { font-size: 0.86rem; } }
+
+  .hero-copy { display: grid; gap: 18px; min-width: 0; }
+  .hero-meta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+  /* ---- community: three doors, described by what is behind them ---- */
+  .links { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 760px) { .links { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .link-card {
+    display: grid; gap: 7px; align-content: start;
+    border: 1px solid var(--rule); background: var(--surface);
+    padding: 18px 18px 20px; text-decoration: none;
+    border-left: 3px solid var(--rule-strong);
+  }
+  .link-card:hover { border-left-color: var(--accent); background: var(--shade); }
+  .link-card strong { font-family: Archivo, sans-serif; font-size: 1.05rem; font-weight: 600; }
+  .link-note { color: var(--slate); font-size: 0.9rem; line-height: 1.5; }
+
+  /* ---- footer titleblock ---- */
+  .tb-foot { margin-bottom: 18px; }
+  .tb-foot .v a { text-decoration-color: var(--rule-strong); text-underline-offset: 3px; }
+  .foot-row {
+    display: flex; gap: 18px; flex-wrap: wrap; justify-content: space-between;
+    color: var(--slate); font-size: 0.88rem;
+  }
+  .foot-links { display: flex; gap: 14px; }
+
   /* ---- hero ---- */
   .hero { padding-block: clamp(46px, 8vw, 86px) 0; display: grid; gap: 30px;
           grid-template-columns: minmax(0, 1fr); }
@@ -203,6 +248,7 @@
   .log-entry { border-top: 1px solid var(--rule); padding-top: 16px; }
   .log-entry:first-child { border-top: 1px solid var(--rule-strong); }
   .log-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  .log-dl { margin-left: auto; }
   .log-head h3 { font-family: Archivo, sans-serif; font-size: 1.15rem; }
   .log-entry summary {
     cursor: pointer; display: flex; align-items: baseline; gap: 12px;
@@ -241,7 +287,9 @@
   }
   .note strong { color: var(--ink); font-weight: 600; }
 
-  footer { border-top: 1px solid var(--rule); padding-block: 28px 40px; color: var(--slate); font-size: 0.88rem; display: flex; gap: 18px; flex-wrap: wrap; justify-content: space-between; }
+  /* BLOCK, not flex: the footer now holds a titleblock that has to span the sheet. As a flex
+     item it was sized to its content and stopped two thirds of the way across. */
+  footer { border-top: 1px solid var(--rule); padding-block: 28px 40px; color: var(--slate); font-size: 0.88rem; display: block; }
   footer a { text-decoration-color: var(--rule-strong); text-underline-offset: 3px; }
 
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
@@ -249,14 +297,19 @@
 </head>
 <body>
 
-<div class="sheet">
+<div class="sheet" id="top">
   <header class="masthead">
-    <div class="wordmark"><img class="mark" src="img/logo-256.png" alt="" width="28" height="28">Northsill</div>
-    <div class="ref">Native BIM for Windows · Beta</div>
+    <a class="wordmark" href="#top"><img class="mark" src="img/logo-256.png" alt="" width="28" height="28">Northsill</a>
+    <nav class="nav">
+      <a href="#model">Model</a>
+      <a href="#document">Document</a>
+      <a href="#changelog">Changelog</a>
+      <a class="nav-cta" href="#download">Download</a>
+    </nav>
   </header>
 
   <div class="hero">
-    <div style="display:grid;gap:18px">
+    <div class="hero-copy">
       <div class="ref">Model once. Document from it.</div>
       <h1>The model is the easy part. The drawing set is the job.</h1>
       <p class="lede">
@@ -267,17 +320,22 @@
       </p>
       <div class="cta-row">
         <a class="btn" href="#download">Download for Windows</a>
-        <a class="btn ghost" href="https://facebook.com/NorthsillBIM">See it on Facebook</a>
+        <a class="btn ghost" href="#changelog">What's new in <span id="cta-ver">0.9.6</span></a>
+      </div>
+      <div class="hero-meta ref">
+        <span>Windows 10 / 11</span><span>·</span>
+        <span>Runs on your machine</span><span>·</span>
+        <span id="dl-count" hidden></span>
       </div>
     </div>
 
-    <figure class="plate">
+    <figure class="plate hero-plate">
       <video src="img/hero_loop.mp4" autoplay muted loop playsinline aria-label="A house model turning slowly in the Northsill 3D view"></video>
       <figcaption>A model in Northsill — walls, openings, floors and a framed hip roof.</figcaption>
     </figure>
   </div>
 
-  <section>
+  <section id="model">
     <div class="band">
       <div class="copy">
         <div class="ref">Model</div>
@@ -300,7 +358,7 @@
     </div>
   </section>
 
-  <section>
+  <section id="document">
     <div class="band">
       <div class="copy">
         <div class="ref">Document</div>
@@ -459,9 +517,53 @@
     </div>
   </section>
 
+  <section id="community">
+    <div class="copy" style="gap:20px">
+      <div class="ref">Community</div>
+      <h2>Where the work gets argued about.</h2>
+      <p style="color:var(--slate);max-width:62ch">
+        Northsill is built from what testers report. Nearly every fix in the changelog above
+        started as somebody posting a screenshot of something that looked wrong — so these are
+        not marketing channels, they are where the software actually gets decided.
+      </p>
+      <div class="links">
+        <a class="link-card" href="https://www.facebook.com/groups/1495433925740494">
+          <span class="ref">Facebook group</span>
+          <strong>The tester community</strong>
+          <span class="link-note">Bug reports, screenshots, and builds discussed before they ship. The most useful room.</span>
+        </a>
+        <a class="link-card" href="https://discord.gg/xDYwq74cB">
+          <span class="ref">Discord</span>
+          <strong>Day to day</strong>
+          <span class="link-note">Quick questions, works in progress, and release notices as they land.</span>
+        </a>
+        <a class="link-card" href="https://www.facebook.com/profile.php?id=61593778361413">
+          <span class="ref">Facebook page</span>
+          <strong>Announcements</strong>
+          <span class="link-note">New builds and what changed, without the discussion.</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <footer>
-    <div>Northsill — a BIM application for architects. Built in the open.</div>
-    <div><a href="https://facebook.com/NorthsillBIM">Facebook</a> · <a href="mailto:hello@northsill.app">hello@northsill.app</a></div>
+    <!-- A TITLEBLOCK, because that is the block an architect reads on every sheet they have
+         ever been handed. The same component the download block uses, doing the job it was
+         designed for. Generic footers are a row of links; this is the drawing's own furniture. -->
+    <div class="titleblock tb-foot">
+      <div class="field"><span class="k ref">Project</span><span class="v">Northsill</span></div>
+      <div class="field"><span class="k ref">Status</span><span class="v">Beta — in development</span></div>
+      <div class="field"><span class="k ref">Version</span><span class="v" id="tb-ver">0.9.6</span></div>
+      <div class="field"><span class="k ref">Contact</span><span class="v"><a href="mailto:hello@northsill.app">hello@northsill.app</a></span></div>
+    </div>
+    <div class="foot-row">
+      <div>Northsill — a BIM application for architects. Windows only, and it runs on your own machine.</div>
+      <div class="foot-links">
+        <a href="https://www.facebook.com/groups/1495433925740494">Group</a>
+        <a href="https://discord.gg/xDYwq74cB">Discord</a>
+        <a href="https://www.facebook.com/profile.php?id=61593778361413">Page</a>
+      </div>
+    </div>
   </footer>
 </div>
 
@@ -578,6 +680,12 @@
   }
 
   function mb(bytes) { return (bytes / (1024 * 1024)).toFixed(1) + " MB"; }
+  // How many people took THIS build. It is a real signal and it costs nothing to show —
+  // and it saves a trip to the releases page to answer "how many downloaded 0.9.5?".
+  function dls(asset) {
+    var n = asset && asset.download_count;
+    return n ? " · " + n + (n === 1 ? " download" : " downloads") : "";
+  }
   function day(iso) { return (iso || "").slice(0, 10); }
   function isInstaller(a) { return /\.exe$/i.test(a.name || ""); }
 
@@ -598,6 +706,14 @@
       var dl = $("dl");
       if (dl) { dl.href = cur.asset.browser_download_url; }
       if (tag && $("f-ver")) $("f-ver").textContent = tag + " beta";
+      if (tag && $("cta-ver")) $("cta-ver").textContent = tag;
+      if (tag && $("tb-ver")) $("tb-ver").textContent = tag + " beta";
+      var total = 0;
+      builds.forEach(function (b) { total += (b.asset.download_count || 0); });
+      if (total > 0 && $("dl-count")) {
+        $("dl-count").textContent = total + (total === 1 ? " download" : " downloads") + " so far";
+        $("dl-count").hidden = false;
+      }
       if ($("f-size")) $("f-size").textContent = mb(cur.asset.size);
 
       // Expiry and checksum are only as good as the metadata block. No block, no row.
@@ -621,7 +737,7 @@
           return '<div class="field">' +
                  '<span class="k ref">' + day(b.rel.published_at) + "</span>" +
                  '<span class="v"><a href="' + b.asset.browser_download_url + '">' +
-                 t + "</a> · " + mb(b.asset.size) + "</span></div>";
+                 t + "</a> · " + mb(b.asset.size) + dls(b.asset) + "</span></div>";
         }).join("");
         $("older").hidden = false;
       }
@@ -633,7 +749,8 @@
         $("log-list").innerHTML = builds.slice(0, 8).map(function (b, i) {
           var t = (b.rel.tag_name || "").replace(/^v/, "");
           var inner = '<div class="log-head"><span class="ref">' + day(b.rel.published_at) +
-                      '</span><h3>' + esc(t) + '</h3></div>' +
+                      '</span><h3>' + esc(t) + '</h3><span class="ref log-dl">' +
+                      esc((b.asset.download_count || 0) + " downloads") + '</span></div>' +
                       '<div class="log-body">' + md(b.rel.body) + "</div>";
           // The current build is open; the rest are a click away, so the page stays a page
           // rather than becoming an archive you have to scroll past to reach anything.
