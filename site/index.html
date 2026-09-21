@@ -46,7 +46,15 @@
     --slate: #5b6672;
     --rule: #d9dee3;
     --rule-strong: #b9c2ca;
-    --accent: #c96a12;
+    /* ★ THE ACCENT IS THE MARK'S OWN BLUE, SAMPLED FROM logo-256.png: the icon is #002c83
+       through #087ad1, and the page had been carrying an orange that appears nowhere in the
+       product. A brand colour is not a preference, it is the thing that makes a page and an
+       application look like the same company. The button takes the GRADIENT; everything else
+       -- rules, focus rings, the current-section underline -- takes a solid mid-blue, because
+       a hairline with a gradient in it is just a smudge. */
+    --accent: #0b63c4;
+    --accent-deep: #002c83;
+    --accent-grad: linear-gradient(135deg, #0b7bd6 0%, #00358f 100%);
     --accent-ink: #ffffff;
     --shade: #eef1f3;
     /* Media is the argument on a page like this, so it is given a CARD rather than a box:
@@ -65,8 +73,10 @@
       --slate: #9aa6b2;
       --rule: #272d34;
       --rule-strong: #39424b;
-      --accent: #e28121;
-      --accent-ink: #14171a;
+      --accent: #2f8ae4;
+      --accent-deep: #0b3f8f;
+      --accent-grad: linear-gradient(135deg, #1f8fe0 0%, #0b3f8f 100%);
+      --accent-ink: #ffffff;
       --shade: #1b2026;
       --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -12px rgba(0, 0, 0, 0.6);
       --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.4), 0 28px 64px -20px rgba(0, 0, 0, 0.7);
@@ -79,13 +89,21 @@
     --slate: #9aa6b2;
     --rule: #272d34;
     --rule-strong: #39424b;
-    --accent: #e28121;
-    --accent-ink: #14171a;
+    --accent: #2f8ae4;
+    --accent-deep: #0b3f8f;
+    --accent-grad: linear-gradient(135deg, #1f8fe0 0%, #0b3f8f 100%);
+    --accent-ink: #ffffff;
     --shade: #1b2026;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -12px rgba(0, 0, 0, 0.6);
     --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.4), 0 28px 64px -20px rgba(0, 0, 0, 0.7);
   }
 
+  html {
+    scroll-behavior: smooth;
+    /* The sticky bar is ~70px; this keeps an anchored heading clear of it, and adds enough
+       air above that the section reads as having ARRIVED rather than been cropped. */
+    scroll-padding-top: 96px;
+  }
   body {
     background: var(--paper);
     color: var(--ink);
@@ -149,7 +167,30 @@
     background: color-mix(in srgb, var(--paper) 82%, transparent);
     backdrop-filter: blur(12px) saturate(1.2);
     border-bottom: 1px solid var(--rule);
+    transition: background 0.25s ease, box-shadow 0.25s ease;
   }
+  /* At the very top the bar is part of the page; once you have left the top it is floating
+     OVER content, and it should say so. Without this the bar and the page share an edge and
+     the reader cannot tell which is which while scrolling. */
+  .topbar.lifted {
+    background: color-mix(in srgb, var(--paper) 94%, transparent);
+    box-shadow: 0 10px 30px -22px rgba(16, 24, 40, 0.55);
+  }
+  /* Where you are, in the nav. A long page with five destinations and no current-state is a
+     page you can get lost in; this costs one observer and one attribute. */
+  .nav a[aria-current="true"] {
+    color: var(--ink); border-bottom-color: var(--accent);
+  }
+
+  /* Keyboard users land here first. It is invisible until focused, and then it is the first
+     thing they can act on -- otherwise reaching the download means tabbing the whole nav. */
+  .skip {
+    position: absolute; left: -9999px; top: 0;
+    background: var(--accent); color: var(--accent-ink);
+    padding: 10px 16px; border-radius: 0 0 var(--radius-sm) 0; z-index: 40;
+    font-weight: 600; text-decoration: none;
+  }
+  .skip:focus { left: 0; }
   .masthead { border-bottom: none; }
   .wordmark { text-decoration: none; }
   .nav { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
@@ -159,7 +200,7 @@
   }
   .nav a:hover { color: var(--ink); border-bottom-color: var(--rule-strong); }
   .nav .nav-cta {
-    color: var(--accent-ink); background: var(--accent);
+    color: var(--accent-ink); background: var(--accent-grad);
     padding: 8px 18px; border-radius: 999px; border-bottom: none; font-weight: 600;
     transition: filter 0.18s ease, transform 0.18s ease;
   }
@@ -223,7 +264,7 @@
   .cta-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
   .btn {
     display: inline-flex; align-items: center; gap: 10px;
-    background: var(--accent); color: var(--accent-ink);
+    background: var(--accent-grad); color: var(--accent-ink);
     font-weight: 600; font-size: 1rem;
     padding: 15px 26px; border-radius: 999px; text-decoration: none;
     border: 1px solid transparent;
@@ -384,7 +425,7 @@
               font-size: 1.2rem; line-height: 1; }
   .log-entry[open] .log-sign::before { content: "–"; }
   .log-entry:not([open]) .log-sign::before { content: "+"; }
-  .log-latest { color: var(--accent-ink); background: var(--accent);
+  .log-latest { color: var(--accent-ink); background: var(--accent-grad);
                 border-radius: 999px; padding: 2px 9px; font-size: 0.62rem; }
   .log-body {
     color: var(--slate); font-size: 0.95rem;
@@ -446,6 +487,7 @@
   :root.js-anim .reveal.d2.in { transition-delay: 0.14s; }
 
   @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }     /* the glide is motion too, and it is the biggest */
     * { animation: none !important; transition: none !important; }
     .reveal { opacity: 1 !important; transform: none !important; }
   }
@@ -453,6 +495,7 @@
 </head>
 <body>
 
+<a class="skip" href="#download">Skip to download</a>
 <div class="topbar">
   <header class="masthead sheet">
     <a class="wordmark" href="#top"><img class="mark" src="img/logo-256.png" alt="" width="28" height="28">Northsill</a>
@@ -968,14 +1011,27 @@
   // a page that is already readable.
   var root = document.documentElement;
   root.classList.add("js-anim");
-  setTimeout(function () { root.classList.remove("js-anim"); }, 2500);
+  var fired = 0;
+  setTimeout(function () {
+    // Only if NOTHING ever arrived. Removing this class unconditionally is what turned the
+    // animation off after two and a half seconds, which is to say for the entire page.
+    if (!fired) root.classList.remove("js-anim");
+  }, 2500);
 
+  // Everything that is its own thought on the page. The download card, the ledger columns,
+  // the changelog and the footer block were all left out before, which is most of the second
+  // half of the page.
   var groups = [
     document.querySelectorAll(".hero-copy > *"),
     document.querySelectorAll(".hero-plate"),
     document.querySelectorAll("section .copy"),
     document.querySelectorAll("section .plate"),
-    document.querySelectorAll(".link-card")
+    document.querySelectorAll(".ledger-col"),
+    document.querySelectorAll(".issue"),
+    document.querySelectorAll("#older"),
+    document.querySelectorAll("#log-list"),
+    document.querySelectorAll(".link-card"),
+    document.querySelectorAll(".tb-foot")
   ];
   var items = [];
   groups.forEach(function (list) {
@@ -992,6 +1048,7 @@
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) {
       if (!e.isIntersecting) return;
+      fired++;
       e.target.classList.add("in");
       io.unobserve(e.target);
     });
@@ -1010,6 +1067,87 @@
       if (r.top < window.innerHeight * 0.9) { el.classList.add("in"); io.unobserve(el); }
     });
   });
+
+  // A SECOND NET, on scroll rather than on a clock. If the observer is asleep -- an anchor
+  // jump that lands mid-page, a tab restored from the back/forward cache, a browser quirk --
+  // this reveals whatever is genuinely on screen, and it can never hide anything. rAF-gated,
+  // so a fast scroll costs one pass per frame and not one per event.
+  var ticking = false;
+  window.addEventListener("scroll", function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      ticking = false;
+      var h = window.innerHeight;
+      for (var i = items.length - 1; i >= 0; i--) {
+        var el = items[i];
+        if (el.classList.contains("in")) continue;
+        var r = el.getBoundingClientRect();
+        if (r.top < h * 0.92 && r.bottom > 0) { el.classList.add("in"); io.unobserve(el); }
+      }
+    });
+  }, { passive: true });
+})();
+
+// ---------------------------------------------------------------------------------------
+// WHERE YOU ARE, AND WHAT IS UNDER THE BAR.
+//
+// Two small things that separate a page from a document. The header LIFTS once you have left
+// the top, so it stops sharing an edge with the content it is floating over; and the nav
+// marks the section you are actually in, so a five-destination page cannot lose you.
+//
+// The active section is chosen by which one covers the middle of the viewport -- not the
+// first one intersecting. With a sticky header and sections a screen and a half tall, "first
+// intersecting" lights up the NEXT section while you are still reading the previous one.
+// ---------------------------------------------------------------------------------------
+(function () {
+  var bar = document.querySelector(".topbar");
+  var links = Array.prototype.slice.call(document.querySelectorAll(".nav a[href^='#']"));
+  var targets = links.map(function (a) {
+    return document.getElementById(a.getAttribute("href").slice(1));
+  });
+
+  var ticking = false;
+  function update() {
+    ticking = false;
+    if (bar) bar.classList.toggle("lifted", window.scrollY > 8);
+    var mid = window.innerHeight * 0.45, best = -1, bestTop = -Infinity;
+    for (var i = 0; i < targets.length; i++) {
+      var t = targets[i];
+      if (!t || t.hidden) continue;
+      var r = t.getBoundingClientRect();
+      if (r.top <= mid && r.top > bestTop) { bestTop = r.top; best = i; }
+    }
+    for (var j = 0; j < links.length; j++) {
+      if (j === best) links[j].setAttribute("aria-current", "true");
+      else links[j].removeAttribute("aria-current");
+    }
+  }
+  window.addEventListener("scroll", function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  }, { passive: true });
+  window.addEventListener("resize", update, { passive: true });
+  update();
+})();
+
+// ---------------------------------------------------------------------------------------
+// THE HERO LOOP STOPS WHEN NOBODY IS WATCHING.
+//
+// It is an autoplaying video on a page people leave open. Decoding it while it is three
+// screens above the reader costs them battery and fan noise and buys nothing. Pausing it
+// off-screen is invisible when it works, which is the point.
+// ---------------------------------------------------------------------------------------
+(function () {
+  var v = document.querySelector(".hero-plate video");
+  if (!v || !("IntersectionObserver" in window)) return;
+  new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+      else v.pause();
+    });
+  }, { threshold: 0.05 }).observe(v);
 })();
 </script>
 </body>
