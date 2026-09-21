@@ -32,7 +32,9 @@
 <meta name="twitter:title" content="Northsill — native BIM for Windows">
 <meta name="twitter:description" content="Model the building once. Plans, elevations, sections, schedules and sheets are derived from it. Runs on your own machine.">
 <meta name="twitter:image" content="https://northsill.app/img/social-card.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
   :root {
     /* Drawing-sheet palette: graphite ink on cool drafting paper, with the app's own
@@ -47,6 +49,13 @@
     --accent: #c96a12;
     --accent-ink: #ffffff;
     --shade: #eef1f3;
+    /* Media is the argument on a page like this, so it is given a CARD rather than a box:
+       a real radius, a shadow that reads as depth rather than as a border, and no hairline
+       fighting the image inside it. */
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 12px 32px -12px rgba(16, 24, 40, 0.16);
+    --shadow-lg: 0 2px 4px rgba(16, 24, 40, 0.04), 0 28px 64px -20px rgba(16, 24, 40, 0.28);
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -59,6 +68,8 @@
       --accent: #e28121;
       --accent-ink: #14171a;
       --shade: #1b2026;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -12px rgba(0, 0, 0, 0.6);
+      --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.4), 0 28px 64px -20px rgba(0, 0, 0, 0.7);
     }
   }
   :root[data-theme="dark"] {
@@ -71,22 +82,37 @@
     --accent: #e28121;
     --accent-ink: #14171a;
     --shade: #1b2026;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -12px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.4), 0 28px 64px -20px rgba(0, 0, 0, 0.7);
   }
 
   body {
     background: var(--paper);
     color: var(--ink);
-    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
     font-size: 17px;
-    line-height: 1.6;
+    line-height: 1.62;
+    letter-spacing: -0.011em;
     -webkit-font-smoothing: antialiased;
   }
-  .sheet { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 0; }
+  /* ★ NO `width: 100%` HERE. This sheet is a BLOCK, so it already fills its parent; adding an
+     explicit width under the default `content-box` makes the width the CONTENT box and the
+     gutters are then added OUTSIDE it -- the page came out one gutter too wide and every
+     paragraph ran off the right edge of a phone. The block default is the correct answer and
+     `box-sizing` is not needed to get it. */
+  .sheet {
+    max-width: 1560px; margin: 0 auto;
+    padding-inline: clamp(20px, 4.5vw, 72px); padding-block: 0;
+  }
 
-  h1, h2, h3 { font-family: Archivo, "IBM Plex Sans", system-ui, sans-serif; text-wrap: balance; margin: 0; }
-  h1 { font-size: clamp(2.4rem, 6.2vw, 4.1rem); line-height: 1.02; font-weight: 700; letter-spacing: -0.035em; }
-  h2 { font-size: clamp(1.5rem, 3.2vw, 2.05rem); line-height: 1.15; font-weight: 600; letter-spacing: -0.02em; }
-  h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.005em; }
+  /* ★ BIG, LIGHT, TIGHT. The single biggest difference between this page and a modern
+     product page was not colour, it was SCALE and WEIGHT: a 700-weight headline at 4.1rem
+     reads as a poster, a 500-weight one at 5rem reads as a product. Tracking comes in as the
+     size goes up, which is what stops large light type looking loose. */
+  h1, h2, h3 { font-family: "Inter Tight", Inter, system-ui, sans-serif; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(2.6rem, 6.6vw, 5rem); line-height: 1.03; font-weight: 500; letter-spacing: -0.042em; }
+  h2 { font-size: clamp(1.8rem, 3.8vw, 2.9rem); line-height: 1.1; font-weight: 500; letter-spacing: -0.032em; }
+  h3 { font-size: 1.08rem; font-weight: 600; letter-spacing: -0.01em; }
   p { margin: 0; }
   a { color: inherit; }
 
@@ -102,12 +128,11 @@
   .masthead {
     display: flex; align-items: center; justify-content: space-between;
     gap: 16px; flex-wrap: wrap;
-    padding-block: 22px;
-    border-bottom: 1px solid var(--rule);
+    padding-block: 18px;
   }
   .wordmark {
-    font-family: Archivo, sans-serif; font-weight: 700;
-    font-size: 1.25rem; letter-spacing: -0.03em;
+    font-family: "Inter Tight", sans-serif; font-weight: 600;
+    font-size: 1.22rem; letter-spacing: -0.03em;
     display: flex; align-items: center; gap: 10px;
   }
   /* The real app icon, not a stand-in square: the mark on the page is the mark on the
@@ -115,12 +140,17 @@
   .wordmark .mark { width: 1.45em; height: 1.45em; border-radius: 5px; align-self: center;
                     border: 1px solid var(--rule); }
 
-  /* ---- masthead: sticky, because Download should never be more than a glance away ---- */
-  .masthead {
+  /* ---- masthead: sticky and FULL WIDTH ----
+     The bar is the band; the masthead inside it is the row. Sticky lives on the band, so the
+     blur and the rule reach the window edges while the logo and the nav still line up with
+     the page content below them. */
+  .topbar {
     position: sticky; top: 0; z-index: 20;
-    background: color-mix(in srgb, var(--paper) 88%, transparent);
-    backdrop-filter: blur(8px);
+    background: color-mix(in srgb, var(--paper) 82%, transparent);
+    backdrop-filter: blur(12px) saturate(1.2);
+    border-bottom: 1px solid var(--rule);
   }
+  .masthead { border-bottom: none; }
   .wordmark { text-decoration: none; }
   .nav { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
   .nav a {
@@ -130,12 +160,20 @@
   .nav a:hover { color: var(--ink); border-bottom-color: var(--rule-strong); }
   .nav .nav-cta {
     color: var(--accent-ink); background: var(--accent);
-    padding: 7px 14px; border-bottom: none; font-weight: 600;
+    padding: 8px 18px; border-radius: 999px; border-bottom: none; font-weight: 600;
+    transition: filter 0.18s ease, transform 0.18s ease;
   }
-  .nav .nav-cta:hover { filter: brightness(1.07); border-bottom-color: transparent; }
+  .nav .nav-cta:hover { filter: brightness(1.06); transform: translateY(-1px); border-bottom-color: transparent; }
   @media (max-width: 620px) { .nav { gap: 14px; } .nav a { font-size: 0.86rem; } }
 
-  .hero-copy { display: grid; gap: 18px; min-width: 0; }
+  /* ★ minmax(0, 1fr), NOT the default `auto`. A grid column sized `auto` is sized to its
+     MAX-CONTENT, so on a phone the lede -- capped at 58ch, which is wider than a 390 px
+     screen -- pushed the column past the viewport and the right-hand end of every paragraph
+     was simply off the side of the page. `min-width: 0` on the container does not help,
+     because the overflow is the COLUMN, not the box. Caught by rendering the page at 390 px
+     and reading the picture, which is the only thing that would have caught it. */
+  .hero-copy { display: grid; gap: 18px; min-width: 0; grid-template-columns: minmax(0, 1fr); }
+  .copy { grid-template-columns: minmax(0, 1fr); }
   .hero-meta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
   /* ---- community: three doors, described by what is behind them ---- */
@@ -144,12 +182,22 @@
   .link-card {
     display: grid; gap: 7px; align-content: start;
     border: 1px solid var(--rule); background: var(--surface);
-    padding: 18px 18px 20px; text-decoration: none;
+    padding: 20px 20px 22px; text-decoration: none;
     border-left: 3px solid var(--rule-strong);
+    border-radius: var(--radius-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-left-color 0.2s ease;
   }
-  .link-card:hover { border-left-color: var(--accent); background: var(--shade); }
-  .link-card strong { font-family: Archivo, sans-serif; font-size: 1.05rem; font-weight: 600; }
+  .link-card:hover {
+    border-left-color: var(--accent); background: var(--surface);
+    transform: translateY(-2px); box-shadow: var(--shadow);
+  }
+  .link-card strong { font-family: "Inter Tight", sans-serif; font-size: 1.05rem; font-weight: 600; }
   .link-note { color: var(--slate); font-size: 0.9rem; line-height: 1.5; }
+  /* The brand mark, in the brand's own colour, at text size. currentColor everywhere else on
+     this page; here the colour IS the identification. */
+  .link-card .brand { width: 26px; height: 26px; display: block; margin-bottom: 4px; }
+  .brand-fb { color: #1877F2; }
+  .brand-dc { color: #5865F2; }
 
   /* ---- footer titleblock ---- */
   .tb-foot { margin-bottom: 18px; }
@@ -161,11 +209,15 @@
   .foot-links { display: flex; gap: 14px; }
 
   /* ---- hero ---- */
-  .hero { padding-block: clamp(46px, 8vw, 86px) 0; display: grid; gap: 30px;
-          grid-template-columns: minmax(0, 1fr); }
+  .hero { padding-block: clamp(56px, 10vw, 110px) 0; display: grid; gap: clamp(34px, 4vw, 60px);
+          grid-template-columns: minmax(0, 1fr); align-items: center; }
+  @media (min-width: 1180px) {
+    .hero { grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); }
+    .hero h1 { font-size: clamp(3rem, 3.7vw, 4.2rem); }
+  }
   .hero .lede {
-    font-size: clamp(1.05rem, 2.1vw, 1.26rem);
-    color: var(--slate); max-width: 60ch; line-height: 1.55;
+    font-size: clamp(1.1rem, 2.2vw, 1.38rem);
+    color: var(--slate); max-width: 58ch; line-height: 1.55;
   }
   .hero .lede strong { color: var(--ink); font-weight: 600; }
   .cta-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
@@ -173,27 +225,46 @@
     display: inline-flex; align-items: center; gap: 10px;
     background: var(--accent); color: var(--accent-ink);
     font-weight: 600; font-size: 1rem;
-    padding: 14px 22px; border-radius: 2px; text-decoration: none;
+    padding: 15px 26px; border-radius: 999px; text-decoration: none;
     border: 1px solid transparent;
+    transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.1);
   }
-  .btn:hover { filter: brightness(1.07); }
+  .btn:hover { filter: brightness(1.06); transform: translateY(-1px); box-shadow: var(--shadow); }
   .btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule-strong); }
   .btn:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-  .plate { border: 1px solid var(--rule); background: var(--surface); }
+  .plate {
+    border: 1px solid var(--rule); background: var(--surface);
+    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  }
   .plate video, .plate img { display: block; width: 100%; max-width: 100%; height: auto; }
+  .hero-plate { box-shadow: var(--shadow-lg); }
   figure { margin: 0; }
   figcaption { padding: 11px 14px; border-top: 1px solid var(--rule); color: var(--slate); font-size: 0.85rem; }
 
   /* ---- sections ---- */
-  section { padding-block: clamp(46px, 7vw, 78px); border-top: 1px solid var(--rule); }
+  section { padding-block: clamp(56px, 9vw, 116px); border-top: 1px solid var(--rule); }
   .band { display: grid; gap: 34px; grid-template-columns: minmax(0, 1fr); align-items: start; }
-  @media (min-width: 880px) { .band { grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr); gap: 54px; } }
-  .band .copy { display: grid; gap: 16px; align-content: start; min-width: 0; }
+  @media (min-width: 880px) { .band { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(54px, 5vw, 88px); } }
+  @media (min-width: 1360px) { .band { grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr); } }
+  .band .copy { display: grid; gap: 18px; align-content: start; min-width: 0; }
+  .band .copy p { font-size: 1.04rem; }
   .band .copy p { color: var(--slate); }
 
-  ul.spec { list-style: none; padding: 0; margin: 0; display: grid; gap: 9px; }
-  ul.spec li { display: flex; gap: 11px; font-size: 0.97rem; color: var(--slate); }
+  /* ★ EVERY NESTED GRID NEEDS minmax(0, 1fr) AND EVERY FLEX CHILD min-width: 0.
+     A grid column sized `auto` is sized to MAX-CONTENT, and a flex item's automatic minimum
+     size is its content -- so a long spec line pushed the column past the viewport and the
+     right-hand end of the sentence went off the side of the phone. The container's own
+     `min-width: 0` does not help, because what overflows is the COLUMN, not the box. */
+  ul.spec { list-style: none; padding: 0; margin: 0; display: grid; gap: 9px;
+            grid-template-columns: minmax(0, 1fr); }
+  ul.spec li { display: flex; gap: 11px; font-size: 0.97rem; color: var(--slate); min-width: 0; }
+  ul.spec li span, ul.spec li { overflow-wrap: anywhere; }
+  /* NOT .links: it has a 3-column rule inside a media query, and a media query adds no
+     specificity — a later single-class rule here would silently win and flatten the community
+     cards back to one column on desktop. */
+  .ledger-col ul, #log-list, .log-body ul { grid-template-columns: minmax(0, 1fr); }
   ul.spec li::before { content: "—"; color: var(--rule-strong); flex: none; }
 
   /* ---- honest ledger ---- */
@@ -207,7 +278,8 @@
   .ledger-col ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 7px; font-size: 0.95rem; color: var(--slate); }
 
   /* ---- titleblock: the one device only this subject owns ---- */
-  .titleblock { border: 1px solid var(--rule-strong); display: grid; grid-template-columns: minmax(0, 1fr); }
+  .titleblock { border: 1px solid var(--rule-strong); border-radius: var(--radius-sm);
+               overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr); }
   @media (min-width: 620px) { .titleblock { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (min-width: 900px) { .titleblock { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   .field { padding: 13px 15px; border-bottom: 1px solid var(--rule); }
@@ -230,34 +302,96 @@
      A checksum and an expiry date belong in a bordered block with ruled fields, not in three
      stacked callouts — .note is the device for a WARNING, and spending it three times in a
      row leaves nothing looking urgent. */
-  .issue { border: 1px solid var(--rule-strong); background: var(--surface); }
+  .issue { border: 1px solid var(--rule-strong); background: var(--surface);
+           border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
   .issue-act {
     display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px;
-    padding: 20px 20px 22px;
+    padding: clamp(20px, 2.4vw, 28px);
   }
-  .issue-act .for { color: var(--slate); font-size: 0.93rem; }
-  .issue .titleblock { border: none; border-top: 1px solid var(--rule-strong); }
+  .issue-act .for { color: var(--slate); font-size: 0.93rem; max-width: 34ch; }
+  .issue .titleblock { border: none; border-radius: 0; border-top: 1px solid var(--rule-strong); }
+
+  /* The checksum FOLDS. It is a verification tool -- wanted by one reader in fifty, and by
+     that reader only after they have downloaded -- and at full running weight a 64-character
+     hash competes with the button for the eye. Closed it is one quiet line; open it is
+     exactly what it was. */
   .issue .sum {
-    padding: 13px 15px; border-top: 1px solid var(--rule);
-    display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline;
+    padding: 0; border-top: 1px solid var(--rule);
   }
-  .issue .sum .v { overflow-wrap: anywhere; color: var(--slate); }
+  .issue .sum > summary {
+    padding: 12px clamp(20px, 2.4vw, 28px); cursor: pointer; list-style: none;
+    display: flex; gap: 10px; align-items: baseline; color: var(--slate);
+    font-size: 0.86rem;
+  }
+  .issue .sum > summary::-webkit-details-marker { display: none; }
+  .issue .sum > summary::after { content: "+"; margin-left: auto; color: var(--rule-strong); }
+  .issue .sum[open] > summary::after { content: "\u2013"; }
+  .issue .sum > summary:hover { color: var(--ink); }
+  .issue .sum .v {
+    display: block; padding: 0 clamp(20px, 2.4vw, 28px) 16px;
+    overflow-wrap: anywhere; color: var(--slate);
+  }
+
+  /* ---- previous builds: a LIST, with columns that line up ----
+     It was rendered into a `titleblock`, whose grid is four equal columns at desktop width --
+     so one build became a single 25%-wide cell and "11 downloads" wrapped onto its own line
+     inside it. A build has four facts of very different widths; they want a row, not a
+     quarter of a sheet. */
+  .builds { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+            border-radius: var(--radius-sm); overflow: hidden; }
+  .build-row {
+    display: grid; align-items: baseline; gap: 4px 18px;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 13px clamp(14px, 1.6vw, 18px);
+    background: var(--surface); text-decoration: none;
+  }
+  @media (min-width: 620px) {
+    .build-row { grid-template-columns: 5.5rem 7rem minmax(0, 1fr) auto; }
+  }
+  .build-row:hover { background: var(--shade); }
+  .build-row .bv { font-family: "IBM Plex Mono", monospace; font-weight: 500; }
+  .build-row .bd, .build-row .bs, .build-row .bn {
+    font-family: "IBM Plex Mono", monospace; font-size: 0.84rem; color: var(--slate);
+    font-variant-numeric: tabular-nums;
+  }
+  .build-row .bn { text-align: right; }
+  .build-row:hover .bv { color: var(--accent); }
 
   /* ---- changelog: a record, not a news feed ---- */
-  #log-list { display: grid; gap: 14px; }
-  .log-entry { border-top: 1px solid var(--rule); padding-top: 16px; }
-  .log-entry:first-child { border-top: 1px solid var(--rule-strong); }
-  .log-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
-  .log-dl { margin-left: auto; }
-  .log-head h3 { font-family: Archivo, sans-serif; font-size: 1.15rem; }
-  .log-entry summary {
-    cursor: pointer; display: flex; align-items: baseline; gap: 12px;
-    font-weight: 600; list-style: none;
+  #log-list { display: grid; gap: 10px; }
+  .log-entry {
+    border: 1px solid var(--rule); border-radius: var(--radius-sm);
+    background: var(--surface); overflow: hidden;
   }
-  .log-entry summary::-webkit-details-marker { display: none; }
-  .log-entry summary::before { content: "+"; color: var(--rule-strong); font-weight: 400; }
-  .log-entry[open] summary::before { content: "–"; }
-  .log-body { color: var(--slate); font-size: 0.95rem; }
+  .log-entry[open] { border-color: var(--rule-strong); }
+  .log-entry > summary {
+    cursor: pointer; list-style: none;
+    display: grid; align-items: center; gap: 4px 16px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 15px clamp(16px, 1.8vw, 22px);
+  }
+  .log-entry > summary::-webkit-details-marker { display: none; }
+  .log-entry > summary:hover { background: var(--shade); }
+  /* The version, in the same place in every card, at a size you can scan down the page. */
+  .log-ver {
+    font-family: "IBM Plex Mono", monospace; font-size: 1.02rem; font-weight: 500;
+    color: var(--ink);
+  }
+  .log-when { grid-column: 1; grid-row: 2; }
+  .log-count { grid-column: 1; grid-row: 2; justify-self: start; }
+  .log-meta { display: flex; gap: 14px; flex-wrap: wrap; align-items: baseline; }
+  .log-sign { grid-column: 2; grid-row: 1 / span 2; color: var(--rule-strong);
+              font-size: 1.2rem; line-height: 1; }
+  .log-entry[open] .log-sign::before { content: "–"; }
+  .log-entry:not([open]) .log-sign::before { content: "+"; }
+  .log-latest { color: var(--accent-ink); background: var(--accent);
+                border-radius: 999px; padding: 2px 9px; font-size: 0.62rem; }
+  .log-body {
+    color: var(--slate); font-size: 0.95rem;
+    padding: 0 clamp(16px, 1.8vw, 22px) 20px;
+    border-top: 1px solid var(--rule);
+    padding-top: 16px; margin-top: -1px;
+  }
   .log-body h4 {
     font-family: "IBM Plex Mono", monospace; font-size: 0.7rem; font-weight: 500;
     letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate);
@@ -283,7 +417,8 @@
 
   .note {
     border-left: 3px solid var(--accent); background: var(--shade);
-    padding: 15px 17px; font-size: 0.95rem; color: var(--slate);
+    border-radius: var(--radius-sm);
+    padding: 16px 19px; font-size: 0.95rem; color: var(--slate);
   }
   .note strong { color: var(--ink); font-weight: 600; }
 
@@ -292,13 +427,34 @@
   footer { border-top: 1px solid var(--rule); padding-block: 28px 40px; color: var(--slate); font-size: 0.88rem; display: block; }
   footer a { text-decoration-color: var(--rule-strong); text-underline-offset: 3px; }
 
-  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  /* ---- motion: arrival, not decoration ----
+     The reveal is deliberately small (14px) and quick (0.6s). A long slide is a page that
+     feels slow; this is a page that feels ASSEMBLED. `.reveal` is only ever added by script,
+     so with JavaScript off nothing is hidden -- the content is the default state and the
+     animation is the enhancement, never the other way round. */
+  /* ★ THE HIDING IS BEHIND ONE GLOBAL SWITCH, and the switch turns itself off.
+     Hiding content per element and relying on per-element bookkeeping to bring it back is how
+     a page ends up BLANK: one observer that never fires, one anchor jump that lands mid-page,
+     one tab restored from the back/forward cache, and a section is invisible with no way for
+     the reader to summon it. `.js-anim` on <html> is added by script and removed by a timer a
+     few seconds later, so the failure mode of every bug in the animation is "it did not
+     animate" rather than "the page is empty". Found by loading the page at #download and
+     photographing a blank screen. */
+  :root.js-anim .reveal { opacity: 0; transform: translateY(14px); }
+  :root.js-anim .reveal.in { opacity: 1; transform: none; transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+  :root.js-anim .reveal.d1.in { transition-delay: 0.07s; }
+  :root.js-anim .reveal.d2.in { transition-delay: 0.14s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1 !important; transform: none !important; }
+  }
 </style>
 </head>
 <body>
 
-<div class="sheet" id="top">
-  <header class="masthead">
+<div class="topbar">
+  <header class="masthead sheet">
     <a class="wordmark" href="#top"><img class="mark" src="img/logo-256.png" alt="" width="28" height="28">Northsill</a>
     <nav class="nav">
       <a href="#model">Model</a>
@@ -307,7 +463,9 @@
       <a class="nav-cta" href="#download">Download</a>
     </nav>
   </header>
+</div>
 
+<div class="sheet" id="top">
   <div class="hero">
     <div class="hero-copy">
       <div class="ref">Model once. Document from it.</div>
@@ -320,7 +478,7 @@
       </p>
       <div class="cta-row">
         <a class="btn" href="#download">Download for Windows</a>
-        <a class="btn ghost" href="#changelog">What's new in <span id="cta-ver">0.9.6</span></a>
+        <a class="btn ghost" href="#changelog">What&rsquo;s new in&nbsp;<span id="cta-ver">0.9.6</span></a>
       </div>
       <div class="hero-meta ref">
         <span>Windows 10 / 11</span><span>·</span>
@@ -464,13 +622,19 @@
       <div class="ref">Download</div>
       <h2>Take it for a drive.</h2>
       <p style="color:var(--slate);max-width:62ch">
-        The beta is a full build — nothing is held back behind a paywall or a watermark on your
-        drawings. It runs entirely on your own machine: no account, no cloud, no project of yours
+        The beta is the whole application — every tool is in it, and nothing it draws carries a
+        watermark. It runs entirely on your own machine: no account, no cloud, no project of yours
         leaves the computer. Install it, open one of your own buildings, and tell me what breaks.
       </p>
       <div class="issue">
         <div class="issue-act">
-          <a class="btn" id="dl" href="https://github.com/cmtest88/northsill/releases/download/v0.9.5/NorthsillBetaSetup-0.9.5.exe" download>Download for Windows</a>
+          <!-- ★ THE FALLBACK, AND IT HAS TO BE KEPT CURRENT. The script upgrades this href to
+               the newest release on load, so this value is only ever served to a reader whose
+               browser could NOT reach the GitHub API — offline, rate-limited (60/hr per IP,
+               unauthenticated), or behind a filter. That reader is the one least able to work
+               out that they were handed an old build, so it is the one that must not be stale.
+               Bump it when you cut a release. -->
+          <a class="btn" id="dl" href="https://github.com/cmtest88/northsill/releases/download/v0.9.6/NorthsillBetaSetup-0.9.6.exe" download>Download for Windows</a>
           <span class="for">Installs in under a minute. Opens <span class="mono">.nsl</span> files straight from Explorer.</span>
         </div>
         <div class="titleblock">
@@ -479,28 +643,30 @@
           <div class="field"><span class="k ref">Size</span><span class="v" id="f-size">21.5 MB</span></div>
           <div class="field"><span class="k ref">Expires</span><span class="v" id="f-exp">2026-11-19</span></div>
         </div>
-        <div class="sum" id="f-sumrow">
-          <span class="k ref">SHA-256</span>
+        <details class="sum" id="f-sumrow">
+          <summary><span class="k ref">SHA-256</span><span>Check the file you downloaded</span></summary>
           <span class="v mono" id="f-sum">cf52e22be2851b8780d59c334879c7c33b6991508f944837621c3c4812a45add</span>
-        </div>
+        </details>
       </div>
 
-      <p class="note">
+      <p class="note" style="margin-top:6px">
         <strong>Windows will warn you when you run it.</strong> The installer is not code-signed
         yet — a certificate costs money that has gone into the software instead. You will see
         “Windows protected your PC”; click <strong>More info → Run anyway</strong>. If that is not
         a trade you are willing to make, that is a fair call — write to me and I will show you the
         app on a call instead.
       </p>
-      <div id="older" hidden>
+      <div id="older" hidden style="margin-top:14px">
         <div class="ref" style="margin-bottom:10px">Previous builds</div>
-        <div class="titleblock" id="older-list"></div>
+        <div class="builds" id="older-list"></div>
       </div>
 
-      <p style="color:var(--slate);max-width:62ch;font-size:0.95rem">
+      <p style="color:var(--slate);max-width:62ch;font-size:0.95rem;margin-top:8px">
         Test builds stop running after 60 days. That is not a sales tactic — it is how I make sure
-        nobody is quietly reporting bugs against a build from four months ago. Come back here for
-        the current one; your <span class="mono">.nsl</span> files keep working.
+        nobody is quietly reporting bugs against a build from four months ago. You should not have
+        to come back here for the next one, though: Northsill checks for updates itself and installs
+        them over the top, keeping your settings. Your <span class="mono">.nsl</span> files keep
+        working either way.
       </p>
     </div>
   </section>
@@ -528,16 +694,19 @@
       </p>
       <div class="links">
         <a class="link-card" href="https://www.facebook.com/groups/1495433925740494">
+          <svg class="brand brand-fb" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
           <span class="ref">Facebook group</span>
           <strong>The tester community</strong>
           <span class="link-note">Bug reports, screenshots, and builds discussed before they ship. The most useful room.</span>
         </a>
         <a class="link-card" href="https://discord.gg/xDYwq74cB">
+          <svg class="brand brand-dc" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/></svg>
           <span class="ref">Discord</span>
           <strong>Day to day</strong>
           <span class="link-note">Quick questions, works in progress, and release notices as they land.</span>
         </a>
         <a class="link-card" href="https://www.facebook.com/profile.php?id=61593778361413">
+          <svg class="brand brand-fb" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
           <span class="ref">Facebook page</span>
           <strong>Announcements</strong>
           <span class="link-note">New builds and what changed, without the discussion.</span>
@@ -732,12 +901,18 @@
       // ---- previous builds -------------------------------------------------------------
       var older = builds.slice(1, 7);
       if (older.length && $("older") && $("older-list")) {
+        // A ROW PER BUILD, columns aligned: version, date, size, downloads. The whole row is
+        // the link -- a 5-character version number is a poor click target, and the reader who
+        // wants an old build wants the build, not the word.
         $("older-list").innerHTML = older.map(function (b) {
           var t = (b.rel.tag_name || "").replace(/^v/, "");
-          return '<div class="field">' +
-                 '<span class="k ref">' + day(b.rel.published_at) + "</span>" +
-                 '<span class="v"><a href="' + b.asset.browser_download_url + '">' +
-                 t + "</a> · " + mb(b.asset.size) + dls(b.asset) + "</span></div>";
+          var n = b.asset.download_count || 0;
+          return '<a class="build-row" href="' + b.asset.browser_download_url + '">' +
+                 '<span class="bv">' + esc(t) + "</span>" +
+                 '<span class="bd">' + day(b.rel.published_at) + "</span>" +
+                 '<span class="bs">' + mb(b.asset.size) + "</span>" +
+                 '<span class="bn">' + (n ? n + (n === 1 ? " download" : " downloads") : "") +
+                 "</span></a>";
         }).join("");
         $("older").hidden = false;
       }
@@ -746,25 +921,95 @@
       // on this page can never disagree with the "what changed" on the release — there is one
       // text, written once.
       if ($("log-list")) {
+        // ONE SHAPE PER RELEASE. The newest is the one that starts open -- it is not a
+        // different KIND of thing, and making it one is what made this list hard to scan:
+        // the version number moved between the first card and all the others.
         $("log-list").innerHTML = builds.slice(0, 8).map(function (b, i) {
           var t = (b.rel.tag_name || "").replace(/^v/, "");
-          var inner = '<div class="log-head"><span class="ref">' + day(b.rel.published_at) +
-                      '</span><h3>' + esc(t) + '</h3><span class="ref log-dl">' +
-                      esc((b.asset.download_count || 0) + " downloads") + '</span></div>' +
-                      '<div class="log-body">' + md(b.rel.body) + "</div>";
-          // The current build is open; the rest are a click away, so the page stays a page
-          // rather than becoming an archive you have to scroll past to reach anything.
-          return i === 0
-            ? '<article class="log-entry">' + inner + "</article>"
-            : '<details class="log-entry"><summary><span class="ref">' +
-              day(b.rel.published_at) + "</span> " + esc(t) + "</summary>" +
-              '<div class="log-body">' + md(b.rel.body) + "</div></details>";
+          var n = b.asset.download_count || 0;
+          return '<details class="log-entry"' + (i === 0 ? " open" : "") + ">" +
+                 "<summary>" +
+                   '<span class="log-ver">' + esc(t) + "</span>" +
+                   '<span class="log-sign"></span>' +
+                   '<span class="log-meta log-when ref">' +
+                     "<span>" + day(b.rel.published_at) + "</span>" +
+                     (n ? "<span>" + n + (n === 1 ? " download" : " downloads") + "</span>" : "") +
+                     (i === 0 ? '<span class="log-latest">Current</span>' : "") +
+                   "</span>" +
+                 "</summary>" +
+                 '<div class="log-body">' + md(b.rel.body) + "</div></details>";
         }).join("");
         $("changelog").hidden = false;
       }
 
     })
     .catch(function () { /* offline, rate-limited or blocked: the fallback link stands */ });
+})();
+</script>
+<script>
+// ---------------------------------------------------------------------------------------
+// ARRIVAL. Sections fade up the first time they come into view, and never again.
+//
+// ★ THE MARKUP DOES NOT KNOW ABOUT THIS. `.reveal` is added HERE, by script, which means a
+// reader with JavaScript off, or a crawler, or a browser that has never heard of
+// IntersectionObserver, sees the page in its default state: everything visible. A page that
+// hides its own content in CSS and relies on script to show it again is a page that is blank
+// when the script fails -- and the one thing this site must never do is fail to hand somebody
+// an installer.
+//
+// ★ ONCE. `unobserve` on entry: a section that re-animates every time you scroll past it is
+// the thing that makes a long page feel cheap.
+// ---------------------------------------------------------------------------------------
+(function () {
+  if (!("IntersectionObserver" in window)) return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  // The switch, and the promise to turn it off. Everything below is an enhancement on top of
+  // a page that is already readable.
+  var root = document.documentElement;
+  root.classList.add("js-anim");
+  setTimeout(function () { root.classList.remove("js-anim"); }, 2500);
+
+  var groups = [
+    document.querySelectorAll(".hero-copy > *"),
+    document.querySelectorAll(".hero-plate"),
+    document.querySelectorAll("section .copy"),
+    document.querySelectorAll("section .plate"),
+    document.querySelectorAll(".link-card")
+  ];
+  var items = [];
+  groups.forEach(function (list) {
+    Array.prototype.forEach.call(list, function (el, i) {
+      el.classList.add("reveal");
+      // A small stagger within a group, capped at two steps: three is a queue, and a reader
+      // waiting for the third card to arrive is a reader noticing the animation.
+      if (i === 1) el.classList.add("d1");
+      if (i >= 2) el.classList.add("d2");
+      items.push(el);
+    });
+  });
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.classList.add("in");
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
+
+  items.forEach(function (el) { io.observe(el); });
+
+
+
+  // Anything already on screen at load gets no delay and no wait: the hero should be THERE,
+  // not arriving. One frame is enough for the class to take, which is what makes it animate
+  // rather than appear.
+  requestAnimationFrame(function () {
+    items.forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.9) { el.classList.add("in"); io.unobserve(el); }
+    });
+  });
 })();
 </script>
 </body>
