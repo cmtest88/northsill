@@ -1,18 +1,18 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<!-- ★ WITHOUT THIS THE PAGE RENDERS AT DESKTOP WIDTH ON A PHONE and the reader is handed a
+<!-- â˜… WITHOUT THIS THE PAGE RENDERS AT DESKTOP WIDTH ON A PHONE and the reader is handed a
      zoomed-out sheet of 8 px type. The site's own call to action points at Facebook, which is
      overwhelmingly read on a phone, so this line is not a detail. -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Northsill — native BIM for Windows</title>
+<title>Northsill â€” native BIM for Windows</title>
 <meta name="description" content="Northsill is a BIM application for architects. Model the building once and derive the whole drawing set from it: plans, elevations, sections, schedules and sheets. Runs on your own machine.">
 <link rel="canonical" href="https://northsill.app/">
 <meta name="theme-color" content="#0b3f8f">
 
 <!-- The app's own icon, so the tab, the bookmark and the phone home screen all carry the
-     same mark as the .exe. Generated from app_qt/icons/app.ico — one source, no drift. -->
+     same mark as the .exe. Generated from app_qt/icons/app.ico â€” one source, no drift. -->
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="img/logo-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
@@ -22,14 +22,14 @@
      one channel the page itself links to. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Northsill">
-<meta property="og:title" content="Northsill — native BIM for Windows">
+<meta property="og:title" content="Northsill â€” native BIM for Windows">
 <meta property="og:description" content="Model the building once. Plans, elevations, sections, schedules and sheets are derived from it. Runs on your own machine.">
 <meta property="og:url" content="https://northsill.app/">
 <meta property="og:image" content="https://northsill.app/img/social-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Northsill — native BIM for Windows">
+<meta name="twitter:title" content="Northsill â€” native BIM for Windows">
 <meta name="twitter:description" content="Model the building once. Plans, elevations, sections, schedules and sheets are derived from it. Runs on your own machine.">
 <meta name="twitter:image" content="https://northsill.app/img/social-card.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,7 +46,7 @@
     --slate: #5b6672;
     --rule: #d9dee3;
     --rule-strong: #b9c2ca;
-    /* ★ THE ACCENT IS THE MARK'S OWN BLUE, SAMPLED FROM logo-256.png: the icon is #002c83
+    /* â˜… THE ACCENT IS THE MARK'S OWN BLUE, SAMPLED FROM logo-256.png: the icon is #002c83
        through #087ad1, and the page had been carrying an orange that appears nowhere in the
        product. A brand colour is not a preference, it is the thing that makes a page and an
        application look like the same company. The button takes the GRADIENT; everything else
@@ -113,7 +113,7 @@
     letter-spacing: -0.011em;
     -webkit-font-smoothing: antialiased;
   }
-  /* ★ NO `width: 100%` HERE. This sheet is a BLOCK, so it already fills its parent; adding an
+  /* â˜… NO `width: 100%` HERE. This sheet is a BLOCK, so it already fills its parent; adding an
      explicit width under the default `content-box` makes the width the CONTENT box and the
      gutters are then added OUTSIDE it -- the page came out one gutter too wide and every
      paragraph ran off the right edge of a phone. The block default is the correct answer and
@@ -123,7 +123,7 @@
     padding-inline: clamp(20px, 4.5vw, 72px); padding-block: 0;
   }
 
-  /* ★ BIG, LIGHT, TIGHT. The single biggest difference between this page and a modern
+  /* â˜… BIG, LIGHT, TIGHT. The single biggest difference between this page and a modern
      product page was not colour, it was SCALE and WEIGHT: a 700-weight headline at 4.1rem
      reads as a poster, a 500-weight one at 5rem reads as a product. Tracking comes in as the
      size goes up, which is what stops large light type looking loose. */
@@ -207,7 +207,7 @@
   .nav .nav-cta:hover { filter: brightness(1.06); transform: translateY(-1px); border-bottom-color: transparent; }
   @media (max-width: 620px) { .nav { gap: 14px; } .nav a { font-size: 0.86rem; } }
 
-  /* ★ minmax(0, 1fr), NOT the default `auto`. A grid column sized `auto` is sized to its
+  /* â˜… minmax(0, 1fr), NOT the default `auto`. A grid column sized `auto` is sized to its
      MAX-CONTENT, so on a phone the lede -- capped at 58ch, which is wider than a 390 px
      screen -- pushed the column past the viewport and the right-hand end of every paragraph
      was simply off the side of the page. `min-width: 0` on the container does not help,
@@ -293,7 +293,7 @@
   .band .copy p { font-size: 1.04rem; }
   .band .copy p { color: var(--slate); }
 
-  /* ★ EVERY NESTED GRID NEEDS minmax(0, 1fr) AND EVERY FLEX CHILD min-width: 0.
+  /* â˜… EVERY NESTED GRID NEEDS minmax(0, 1fr) AND EVERY FLEX CHILD min-width: 0.
      A grid column sized `auto` is sized to MAX-CONTENT, and a flex item's automatic minimum
      size is its content -- so a long spec line pushed the column past the viewport and the
      right-hand end of the sentence went off the side of the phone. The container's own
@@ -303,10 +303,10 @@
   ul.spec li { display: flex; gap: 11px; font-size: 0.97rem; color: var(--slate); min-width: 0; }
   ul.spec li span, ul.spec li { overflow-wrap: anywhere; }
   /* NOT .links: it has a 3-column rule inside a media query, and a media query adds no
-     specificity — a later single-class rule here would silently win and flatten the community
+     specificity â€” a later single-class rule here would silently win and flatten the community
      cards back to one column on desktop. */
   .ledger-col ul, #log-list, .log-body ul { grid-template-columns: minmax(0, 1fr); }
-  ul.spec li::before { content: "—"; color: var(--rule-strong); flex: none; }
+  ul.spec li::before { content: "â€”"; color: var(--rule-strong); flex: none; }
 
   /* ---- honest ledger ---- */
   .ledger { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
@@ -328,10 +328,10 @@
   .field .k { display: block; margin-bottom: 3px; }
   .field .v { font-family: "IBM Plex Mono", monospace; font-size: 0.93rem; font-variant-numeric: tabular-nums; }
 
-  /* Mono, but running-text sized — distinct from .ref, which is the uppercase eyebrow.
+  /* Mono, but running-text sized â€” distinct from .ref, which is the uppercase eyebrow.
      I used this class before it existed, so the checksum was setting in body sans. */
-  /* ★ [hidden] LOSES TO ANY display RULE. .sum sets display:flex, so el.hidden = true did
-     nothing and the row kept showing the PREVIOUS build's checksum — the exact failure the
+  /* â˜… [hidden] LOSES TO ANY display RULE. .sum sets display:flex, so el.hidden = true did
+     nothing and the row kept showing the PREVIOUS build's checksum â€” the exact failure the
      script is written to prevent. The UA sheet's [hidden] is not specific enough; this is. */
   [hidden] { display: none !important; }
 
@@ -341,7 +341,7 @@
   /* ---- the issue record: what you are about to download, stated like a drawing issue ----
      The button alone is a web convention; the sheet of facts beside it is this subject's.
      A checksum and an expiry date belong in a bordered block with ruled fields, not in three
-     stacked callouts — .note is the device for a WARNING, and spending it three times in a
+     stacked callouts â€” .note is the device for a WARNING, and spending it three times in a
      row leaves nothing looking urgent. */
   .issue { border: 1px solid var(--rule-strong); background: var(--surface);
            border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
@@ -423,7 +423,7 @@
   .log-meta { display: flex; gap: 14px; flex-wrap: wrap; align-items: baseline; }
   .log-sign { grid-column: 2; grid-row: 1 / span 2; color: var(--rule-strong);
               font-size: 1.2rem; line-height: 1; }
-  .log-entry[open] .log-sign::before { content: "–"; }
+  .log-entry[open] .log-sign::before { content: "â€“"; }
   .log-entry:not([open]) .log-sign::before { content: "+"; }
   .log-latest { color: var(--accent-ink); background: var(--accent-grad);
                 border-radius: 999px; padding: 2px 9px; font-size: 0.62rem; }
@@ -444,7 +444,7 @@
      stacked into a narrow column with the rest of the sentence beside it. */
   .log-body li { position: relative; padding-left: 22px; }
   .log-body li::before {
-    content: "—"; color: var(--rule-strong);
+    content: "â€”"; color: var(--rule-strong);
     position: absolute; left: 0; top: 0;
   }
   .log-body strong { color: var(--ink); font-weight: 600; }
@@ -473,7 +473,7 @@
      feels slow; this is a page that feels ASSEMBLED. `.reveal` is only ever added by script,
      so with JavaScript off nothing is hidden -- the content is the default state and the
      animation is the enhancement, never the other way round. */
-  /* ★ THE HIDING IS BEHIND ONE GLOBAL SWITCH, and the switch turns itself off.
+  /* â˜… THE HIDING IS BEHIND ONE GLOBAL SWITCH, and the switch turns itself off.
      Hiding content per element and relying on per-element bookkeeping to bring it back is how
      a page ends up BLANK: one observer that never fires, one anchor jump that lands mid-page,
      one tab restored from the back/forward cache, and a section is invisible with no way for
@@ -514,7 +514,7 @@
       <div class="ref">Model once. Document from it.</div>
       <h1>The model is the easy part. The drawing set is the job.</h1>
       <p class="lede">
-        Northsill is a BIM application for architects. You model the building once — and the
+        Northsill is a BIM application for architects. You model the building once â€” and the
         drawing set is <strong>derived</strong> from it: plans, elevations, sections, schedules,
         sheets. Change the model and every view follows, because there is nothing to keep in
         step by hand.
@@ -524,15 +524,15 @@
         <a class="btn ghost" href="#changelog">What&rsquo;s new in&nbsp;<span id="cta-ver">0.9.6</span></a>
       </div>
       <div class="hero-meta ref">
-        <span>Windows 10 / 11</span><span>·</span>
-        <span>Runs on your machine</span><span>·</span>
+        <span>Windows 10 / 11</span><span>Â·</span>
+        <span>Runs on your machine</span><span>Â·</span>
         <span id="dl-count" hidden></span>
       </div>
     </div>
 
     <figure class="plate hero-plate">
       <video src="img/hero_loop.mp4" autoplay muted loop playsinline aria-label="A house model turning slowly in the Northsill 3D view"></video>
-      <figcaption>A model in Northsill — walls, openings, floors and a framed hip roof.</figcaption>
+      <figcaption>A model in Northsill â€” walls, openings, floors and a framed hip roof.</figcaption>
     </figure>
   </div>
 
@@ -543,7 +543,7 @@
         <h2>Build it once, properly.</h2>
         <p>
           Walls that know their layers. Doors and windows that cut them properly. Floors, roofs,
-          stairs, railings, columns, beams and footings — modelled as what they are, not as
+          stairs, railings, columns, beams and footings â€” modelled as what they are, not as
           shapes that look right in one view.
         </p>
         <ul class="spec">
@@ -565,7 +565,7 @@
         <div class="ref">Document</div>
         <h2>Every view comes out of the model.</h2>
         <p>
-          The plan, the elevation and the section are computed from the one model — exactly, every
+          The plan, the elevation and the section are computed from the one model â€” exactly, every
           time. Annotate them the way you always have, put them on sheets with your titleblock,
           and export the set.
         </p>
@@ -573,12 +573,12 @@
           <li>Plans, exact hidden-line elevations and sections</li>
           <li>Dimensions, tags, text and room names</li>
           <li>View range, detail levels, pen standards and hatch patterns</li>
-          <li>Sheets with an editable titleblock → PDF, DXF, SVG, IFC</li>
+          <li>Sheets with an editable titleblock â†’ PDF, DXF, SVG, IFC</li>
         </ul>
       </div>
       <figure class="plate">
         <img src="img/app_plan.jpg" alt="Northsill with a floor plan and the 3D view side by side, a wall selected in both" loading="lazy">
-        <figcaption>A wall selected in the plan, highlighted in the 3D — one model, two views.</figcaption>
+        <figcaption>A wall selected in the plan, highlighted in the 3D â€” one model, two views.</figcaption>
       </figure>
     </div>
   </section>
@@ -600,7 +600,7 @@
       </div>
       <figure class="plate">
         <img src="img/app_sched.jpg" alt="A framing cut list schedule beside the 3D view, with one rafter selected and its cut data shown" loading="lazy">
-        <figcaption>A framing cut list, counted from the model — beside the rafter it is counting.</figcaption>
+        <figcaption>A framing cut list, counted from the model â€” beside the rafter it is counting.</figcaption>
       </figure>
     </div>
   </section>
@@ -612,7 +612,7 @@
         <h2>It knows how the building is put together.</h2>
         <p>
           The model carries the frame, not a pattern drawn over it. A birdsmouth exists because
-          the roof bears on a plate and the plate is referenced to the rafter — so change the
+          the roof bears on a plate and the plate is referenced to the rafter â€” so change the
           pitch and every member re-cuts itself.
         </p>
         <ul class="spec">
@@ -624,7 +624,7 @@
       </div>
       <figure class="plate">
         <img src="img/structure.jpg" alt="A hidden-line x-ray of the same house showing every stud, plate and rafter" loading="lazy">
-        <figcaption>The same model, drawn as linework — every stud, plate and rafter.</figcaption>
+        <figcaption>The same model, drawn as linework â€” every stud, plate and rafter.</figcaption>
       </figure>
     </div>
   </section>
@@ -650,7 +650,7 @@
         <div class="ledger-col">
           <h3><span class="dot off"></span>Not yet</h3>
           <ul>
-            <li>No IFC or DWG <em>import</em> — Northsill can be added to a workflow, but cannot yet join one</li>
+            <li>No IFC or DWG <em>import</em> â€” Northsill can be added to a workflow, but cannot yet join one</li>
             <li>Very large models are slow to open cold (tens of thousands of elements)</li>
             <li>Windows only; no macOS build</li>
             <li>The installer is unsigned, so Windows will warn you</li>
@@ -665,24 +665,24 @@
       <div class="ref">Download</div>
       <h2>Take it for a drive.</h2>
       <p style="color:var(--slate);max-width:62ch">
-        The beta is the whole application — every tool is in it, and nothing it draws carries a
+        The beta is the whole application â€” every tool is in it, and nothing it draws carries a
         watermark. It runs entirely on your own machine: no account, no cloud, no project of yours
         leaves the computer. Install it, open one of your own buildings, and tell me what breaks.
       </p>
       <div class="issue">
         <div class="issue-act">
-          <!-- ★ THE FALLBACK, AND IT HAS TO BE KEPT CURRENT. The script upgrades this href to
+          <!-- â˜… THE FALLBACK, AND IT HAS TO BE KEPT CURRENT. The script upgrades this href to
                the newest release on load, so this value is only ever served to a reader whose
-               browser could NOT reach the GitHub API — offline, rate-limited (60/hr per IP,
+               browser could NOT reach the GitHub API â€” offline, rate-limited (60/hr per IP,
                unauthenticated), or behind a filter. That reader is the one least able to work
                out that they were handed an old build, so it is the one that must not be stale.
                Bump it when you cut a release. -->
-          <a class="btn" id="dl" href="https://github.com/cmtest88/northsill/releases/download/v0.9.6/NorthsillBetaSetup-0.9.6.exe" download>Download for Windows</a>
+          <a class="btn" id="dl" href="https://github.com/cmtest88/northsill/releases/download/v0.9.7/NorthsillBetaSetup-0.9.7.exe" download>Download for Windows</a>
           <span class="for">Installs in under a minute. Opens <span class="mono">.nsl</span> files straight from Explorer.</span>
         </div>
         <div class="titleblock">
           <div class="field"><span class="k ref">Version</span><span class="v" id="f-ver">0.9.5 beta</span></div>
-          <div class="field"><span class="k ref">Platform</span><span class="v">Windows 10 / 11 · x64</span></div>
+          <div class="field"><span class="k ref">Platform</span><span class="v">Windows 10 / 11 Â· x64</span></div>
           <div class="field"><span class="k ref">Size</span><span class="v" id="f-size">21.5 MB</span></div>
           <div class="field"><span class="k ref">Expires</span><span class="v" id="f-exp">2026-11-19</span></div>
         </div>
@@ -694,9 +694,9 @@
 
       <p class="note" style="margin-top:6px">
         <strong>Windows will warn you when you run it.</strong> The installer is not code-signed
-        yet — a certificate costs money that has gone into the software instead. You will see
-        “Windows protected your PC”; click <strong>More info → Run anyway</strong>. If that is not
-        a trade you are willing to make, that is a fair call — write to me and I will show you the
+        yet â€” a certificate costs money that has gone into the software instead. You will see
+        â€œWindows protected your PCâ€; click <strong>More info â†’ Run anyway</strong>. If that is not
+        a trade you are willing to make, that is a fair call â€” write to me and I will show you the
         app on a call instead.
       </p>
       <div id="older" hidden style="margin-top:14px">
@@ -705,7 +705,7 @@
       </div>
 
       <p style="color:var(--slate);max-width:62ch;font-size:0.95rem;margin-top:8px">
-        Test builds stop running after 60 days. That is not a sales tactic — it is how I make sure
+        Test builds stop running after 60 days. That is not a sales tactic â€” it is how I make sure
         nobody is quietly reporting bugs against a build from four months ago. You should not have
         to come back here for the next one, though: Northsill checks for updates itself and installs
         them over the top, keeping your settings. Your <span class="mono">.nsl</span> files keep
@@ -719,7 +719,7 @@
       <div class="ref">Changelog</div>
       <h2>What changed, build by build.</h2>
       <p style="color:var(--slate);max-width:62ch">
-        Written when the build was cut, read straight from the release — so this page and the
+        Written when the build was cut, read straight from the release â€” so this page and the
         release itself cannot drift apart.
       </p>
       <div id="log-list"></div>
@@ -732,7 +732,7 @@
       <h2>Where the work gets argued about.</h2>
       <p style="color:var(--slate);max-width:62ch">
         Northsill is built from what testers report. Nearly every fix in the changelog above
-        started as somebody posting a screenshot of something that looked wrong — so these are
+        started as somebody posting a screenshot of something that looked wrong â€” so these are
         not marketing channels, they are where the software actually gets decided.
       </p>
       <div class="links">
@@ -764,12 +764,12 @@
          designed for. Generic footers are a row of links; this is the drawing's own furniture. -->
     <div class="titleblock tb-foot">
       <div class="field"><span class="k ref">Project</span><span class="v">Northsill</span></div>
-      <div class="field"><span class="k ref">Status</span><span class="v">Beta — in development</span></div>
+      <div class="field"><span class="k ref">Status</span><span class="v">Beta â€” in development</span></div>
       <div class="field"><span class="k ref">Version</span><span class="v" id="tb-ver">0.9.6</span></div>
       <div class="field"><span class="k ref">Contact</span><span class="v"><a href="mailto:hello@northsill.app">hello@northsill.app</a></span></div>
     </div>
     <div class="foot-row">
-      <div>Northsill — a BIM application for architects. Windows only, and it runs on your own machine.</div>
+      <div>Northsill â€” a BIM application for architects. Windows only, and it runs on your own machine.</div>
       <div class="foot-links">
         <a href="https://www.facebook.com/groups/1495433925740494">Group</a>
         <a href="https://discord.gg/xDYwq74cB">Discord</a>
@@ -784,7 +784,7 @@
 // THE DOWNLOAD FACTS COME FROM THE RELEASE, NOT FROM THIS FILE.
 //
 // Hand-written version numbers on a download page go stale the first time you ship and are
-// wrong SILENTLY — the button keeps handing people the previous build and nothing looks
+// wrong SILENTLY â€” the button keeps handing people the previous build and nothing looks
 // broken. So the page asks GitHub what the current release actually is.
 //
 // THREE RULES, each learned from a way this normally breaks:
@@ -794,7 +794,7 @@
 //  2. NEVER SHOW A FACT WE NO LONGER KNOW. The API gives name, size and date but NOT a
 //     checksum or an expiry date. Those come from a machine-readable block that the release
 //     notes carry. If it is absent, the row is HIDDEN rather than left showing the last
-//     build's numbers — a wrong checksum is worse than no checksum.
+//     build's numbers â€” a wrong checksum is worse than no checksum.
 //  3. IT IS A LIST, NOT A LATEST. Older builds render underneath, so somebody on 0.9.4 can
 //     see what they have and what is current.
 // ---------------------------------------------------------------------------------------
@@ -845,9 +845,9 @@
     var text = String(src).replace(/<!--[^]*?-->/g, "");
     var out = [], list = false, fence = false, code = [], para = [], item = null;
 
-    // ★ ESCAPE, THEN FORMAT, AND DO IT ON A WHOLE BLOCK. The first version applied this per
+    // â˜… ESCAPE, THEN FORMAT, AND DO IT ON A WHOLE BLOCK. The first version applied this per
     // LINE, so a bold run that wrapped across two source lines never matched its closing
-    // pair and the reader got literal asterisks — which is exactly what the Installing
+    // pair and the reader got literal asterisks â€” which is exactly what the Installing
     // paragraph did. Release notes wrap; the renderer has to join before it formats.
     function inline(s) {
       return esc(s)
@@ -892,11 +892,11 @@
   }
 
   function mb(bytes) { return (bytes / (1024 * 1024)).toFixed(1) + " MB"; }
-  // How many people took THIS build. It is a real signal and it costs nothing to show —
+  // How many people took THIS build. It is a real signal and it costs nothing to show â€”
   // and it saves a trip to the releases page to answer "how many downloaded 0.9.5?".
   function dls(asset) {
     var n = asset && asset.download_count;
-    return n ? " · " + n + (n === 1 ? " download" : " downloads") : "";
+    return n ? " Â· " + n + (n === 1 ? " download" : " downloads") : "";
   }
   function day(iso) { return (iso || "").slice(0, 10); }
   function isInstaller(a) { return /\.exe$/i.test(a.name || ""); }
@@ -933,7 +933,7 @@
       if ($("f-exp")) {
         // An em dash, not a hidden cell: removing one field of four leaves a gap that reads
         // as a broken table, and "not stated" is the honest thing to say anyway.
-        $("f-exp").textContent = exp || "—";
+        $("f-exp").textContent = exp || "â€”";
       }
       var sha = (cur.m.sha256 || "").toLowerCase();
       if ($("f-sum") && $("f-sumrow")) {
@@ -961,7 +961,7 @@
       }
       // ---- the changelog ----------------------------------------------------------------
       // Every release already carries its notes. Rendering them here means the "what changed"
-      // on this page can never disagree with the "what changed" on the release — there is one
+      // on this page can never disagree with the "what changed" on the release â€” there is one
       // text, written once.
       if ($("log-list")) {
         // ONE SHAPE PER RELEASE. The newest is the one that starts open -- it is not a
@@ -993,14 +993,14 @@
 // ---------------------------------------------------------------------------------------
 // ARRIVAL. Sections fade up the first time they come into view, and never again.
 //
-// ★ THE MARKUP DOES NOT KNOW ABOUT THIS. `.reveal` is added HERE, by script, which means a
+// â˜… THE MARKUP DOES NOT KNOW ABOUT THIS. `.reveal` is added HERE, by script, which means a
 // reader with JavaScript off, or a crawler, or a browser that has never heard of
 // IntersectionObserver, sees the page in its default state: everything visible. A page that
 // hides its own content in CSS and relies on script to show it again is a page that is blank
 // when the script fails -- and the one thing this site must never do is fail to hand somebody
 // an installer.
 //
-// ★ ONCE. `unobserve` on entry: a section that re-animates every time you scroll past it is
+// â˜… ONCE. `unobserve` on entry: a section that re-animates every time you scroll past it is
 // the thing that makes a long page feel cheap.
 // ---------------------------------------------------------------------------------------
 (function () {
